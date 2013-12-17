@@ -1,51 +1,52 @@
 package ax.bru
 
+class Action(override val name: String, val parallel: Boolean, val steps: Seq[Step]) extends Step(name)({}) {
 
-class Action(val steps: Step*) extends Step {
   override def execute() = {
-    steps.foreach(_.execute())
+    println("Running " + (if (parallel) "parallel " else "") + "action: " + name)
+    if (parallel) {
+      steps.reverse.foreach(_.execute())  // for now use reverse to indicate parallelism for later
+    } else {
+      steps.foreach(_.execute())
+    }
   }
 }
 
-// define an Action (containing sequential/concurrent Steps)
+object Action {
+  def apply(name: String, parallel: Boolean = false)(steps: Step*):Action = new Action(name, parallel, steps)
+}
 
-// ie Action1: -- Step 1 -- Step 2 -- Step4
-//                       \- Step 3 -/
-// Action 1 executes Step 1, then concurrently Step2 and Step3 and once both finish, Step 4.  (2 & 3 need a tmp actor checking progress)
-
-
-// for now try sequential execution only, ie Step 1 - Step 2
-
-class Step(block: => Unit) {
+class Step(val name: String)(block: => Unit){
   def execute() = {
+    println("Executing step: " + name)
     block
   }
 }
 
-class ParallelSteps(val steps: Step*) extends Step {
-  override def execute() = {
-    steps.foreach(_.execute())
-  }
+object Step {
+  def apply(block: => Unit):Step = new Step("SOME STEP")(block)
+  def apply(name: String)(block: => Unit): Step = new Step(name)(block)
 }
 
 object ActionMain extends App {
 
-  val step1 = new Step({println("TEST 1")})
+  val step1 = Step(name = "FIRST STEP") {println("TEST 1")}
 
-  val step2 = new Step({println("TEST 2")})
+  val step2 = Step {println("TEST 2")}
 
-  val step3 = new Step({println("TEST 3")})
-  val step4 = new Step({println("TEST 4")})
-  val step5 = new Step({println("TEST 5")})
-  val steps3To5 = new ParallelSteps(step3, step4, step5)
+  val step3 = Step {println("TEST 3")}
+  val step4 = Step {println("TEST 4")}
+  val step5 = Step {println("TEST 5")}
 
-  val step6 = new Step({println("TEST 6")})
+  val parallelSteps3To5 = Action(name = "GRGVFVFVF", parallel = true)(step3, step4, step5)
 
-  val step7 = new Step({println("TEST 7")})
-  val step8 = new Step({println("TEST 8")})
-  val action2 = new Action(step7, step8)
+  val step6 = Step {println("TEST 6")}
 
-  new Action(step1, step2, steps3To5, step6, action2).execute()
+  val step7 = Step {println("TEST 7")}
+  val step8 = Step {println("TEST 8")}
 
+  val anotherAction = Action(name = "Action for STEP 7 and STEP 8")(step7, step8)
+
+  Action(name = "MAIN ACTION")(step1, step2, parallelSteps3To5, step6, anotherAction).execute()
 
 }
