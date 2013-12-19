@@ -4,6 +4,8 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
 
   var data: Map[String, Any] = Map[String, Any]()
 
+  val iterator: Iterator[Step] = steps.iterator
+
   def perform() = {
     execute(this)
     this
@@ -11,12 +13,22 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
 
   override def execute(action: Action) = {
     println("Running " + (if (parallel) "parallel " else "") + "action: " + name)
+
     if (parallel) {
-      steps.reverse.foreach(_.execute(action)) // for now use reverse to indicate parallelism for later
+        //TODO
+//      steps.reverse.foreach(_.execute(action)) // for now use reverse to indicate parallelism for later
     } else {
-      steps.foreach(_.execute(action))
+      iterator.next().execute(this)
     }
+
     println("Finished " + (if (parallel) "parallel " else "") + "action: " + name)
+
+    if (!action.equals(this)){
+      action.data = action.data ++ data
+      if (action.iterator.hasNext) {
+        action.iterator.next().execute(action)
+      }
+    }
   }
 }
 
@@ -27,9 +39,12 @@ object Action {
 }
 
 class Step(val name: String)(function: Action => Unit) {
-  def execute(action: Action) = {
+  def execute(action: Action): Unit = {
     println("Executing step: " + name)
     function(action)
+    if (action.iterator.hasNext) {
+      action.iterator.next().execute(action)
+    }
   }
 }
 
@@ -85,15 +100,36 @@ object ActionMain extends App {
   }
   )
 
-  val step8 = Step((action: Action) => {
-    action.data = action.data.updated("step8", "TEST 8")
-    println("TEST 8")
+  val step8_1 = Step((action: Action) => {
+    action.data = action.data.updated("step8_1", "TEST 8.1")
+    println("TEST 8.1")
   }
   )
 
-  val anotherAction = Action(name = "Action for STEP 7 and STEP 8")(step7, step8)
+  val step8_2 = Step((action: Action) => {
+    action.data = action.data.updated("step8_2", "TEST 8.2")
+    println("TEST 8.2")
+  }
+  )
 
-  val action: Action = Action(name = "MAIN ACTION")(step1, step2, parallelSteps3To5, step6, anotherAction).perform()
+  val step9 = Step((action: Action) => {
+    action.data = action.data.updated("step9", "TEST 9")
+    println("TEST 9")
+  }
+  )
+
+  val step10 = Step((action: Action) => {
+    action.data = action.data.updated("step10", "TEST 10")
+    println("TEST 10")
+  }
+  )
+
+  val step8SubAction = Action(name = "Step 8 sub action")(step8_1, step8_2)
+  val anotherAction = Action(name = "Action for STEP 7 and STEP 8")(step7, step8SubAction, step9)
+
+  val action: Action = Action(name = "MAIN ACTION")(step1, step2,
+//    parallelSteps3To5,
+    step6, anotherAction, step10).perform()
 
   println(action.data)
 
