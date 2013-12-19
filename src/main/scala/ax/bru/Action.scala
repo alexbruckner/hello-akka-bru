@@ -15,8 +15,8 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
     println("Running " + (if (parallel) "parallel " else "") + "action: " + name)
 
     if (parallel) {
-        //TODO
-//      steps.reverse.foreach(_.execute(action)) // for now use reverse to indicate parallelism for later
+      while (iterator.hasNext) iterator.next()  //exhaust the iterator
+      steps.reverse.foreach(_.execute(this)) // for now use reverse to indicate parallelism for later
     } else {
       iterator.next().execute(this)
     }
@@ -25,9 +25,7 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
 
     if (!action.equals(this)){
       action.data = action.data ++ data
-      if (action.iterator.hasNext) {
-        action.iterator.next().execute(action)
-      }
+      executeNextStep(action)
     }
   }
 }
@@ -39,12 +37,15 @@ object Action {
 }
 
 class Step(val name: String)(function: Action => Unit) {
+
   def execute(action: Action): Unit = {
     println("Executing step: " + name)
     function(action)
-    if (action.iterator.hasNext) {
-      action.iterator.next().execute(action)
-    }
+    executeNextStep(action)
+  }
+
+  def executeNextStep(action: Action): Unit = if (action.iterator.hasNext) {
+    action.iterator.next().execute(action)
   }
 }
 
@@ -128,7 +129,7 @@ object ActionMain extends App {
   val anotherAction = Action(name = "Action for STEP 7 and STEP 8")(step7, step8SubAction, step9)
 
   val action: Action = Action(name = "MAIN ACTION")(step1, step2,
-//    parallelSteps3To5,
+    parallelSteps3To5,
     step6, anotherAction, step10).perform()
 
   println(action.data)
