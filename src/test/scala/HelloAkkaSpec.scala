@@ -1,24 +1,24 @@
-//import org.scalatest.{ BeforeAndAfterAll, FlatSpec }
-//import org.scalatest.concurrent._
-//import org.scalatest.matchers.ShouldMatchers
-//import akka.actor.{ Actor, Props, ActorSystem }
-//import akka.testkit.{ ImplicitSender, TestKit, TestActorRef }
-//import scala.concurrent.duration._
-//
-//class HelloAkkaSpec(_system: ActorSystem)
-//  extends TestKit(_system)
-//  with ImplicitSender
-//  with ShouldMatchers
-//  with FlatSpec
-//  with BeforeAndAfterAll {
-//
-//  def this() = this(ActorSystem("HelloAkkaSpec"))
-//
-//  override def afterAll: Unit = {
-//    system.shutdown()
-//    system.awaitTermination(10.seconds)
-//  }
-//
+import org.scalatest.{ BeforeAndAfterAll, FlatSpec }
+import org.scalatest.concurrent._
+import org.scalatest.matchers.ShouldMatchers
+import akka.actor.{ Actor, Props, ActorSystem }
+import akka.testkit.{ ImplicitSender, TestKit, TestActorRef }
+import scala.concurrent.duration._
+
+class HelloAkkaSpec(_system: ActorSystem)
+  extends TestKit(_system)
+  with ImplicitSender
+  with ShouldMatchers
+  with FlatSpec
+  with BeforeAndAfterAll {
+
+//  def this() = this(ActorSystem("helloakka"))
+
+  override def afterAll: Unit = {
+    system.shutdown()
+    system.awaitTermination(10.seconds)
+  }
+
 //  "An HelloAkkaActor" should "be able to set a new greeting" in {
 //    val greeter = TestActorRef(Props[Greeter])
 //    greeter ! WhoToGreet("testkit")
@@ -31,4 +31,10 @@
 //    greeter ! Greet
 //    expectMsgType[Greeting].message.toString should be("hello, testkit")
 //  }
-//}
+
+  def this() = this(ActorSystem("helloakka"))
+  system.actorOf(Props[CounterMain], "main1")
+  system.actorOf(Props[CounterMain2], "main2")
+
+
+}
