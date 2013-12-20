@@ -22,7 +22,7 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
 
     if (parallel) {
       while (iterator.hasNext) iterator.next() //exhaust the iterator
-      steps.reverse.foreach(_.execute(this)) // for now use reverse to indicate parallelism for later
+      steps.foreach(_.execute(this))
       // TODO a check that steps 3-5 have completed (as another step or part of framework)
     } else {
       iterator.next().execute(this)
