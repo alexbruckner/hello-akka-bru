@@ -11,13 +11,11 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
     this
   }
 
-  def set(key: String, value: Any) {
+  def set[T](key: String, value: T) {
     data = data.updated(key, value)
   }
 
-  def get(key: String) {
-    data(key)
-  }
+  def get[T](key: String, c: Class[T] = classOf[String]): T = c.cast(data(key))
 
   override def execute(action: Action) = {
     println("Running " + (if (parallel) "parallel " else "") + "action: " + name)
