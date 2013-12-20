@@ -1,5 +1,7 @@
 package ax.bru
 
+import org.eintr.loglady.Logging
+
 class Action(override val name: String, val steps: Seq[Step], val parallel: Boolean) extends Step(name)(null) {
 
   var data: Map[String, Any] = Map[String, Any]()
@@ -18,7 +20,7 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
   def get[T](key: String, c: Class[T] = classOf[String]): T = c.cast(data(key))
 
   override def execute(action: Action) = {
-    println("Running " + (if (parallel) "parallel " else "") + "action: " + name)
+    log.debug("Running " + (if (parallel) "parallel " else "") + "action: " + name)
 
     if (parallel) {
       while (iterator.hasNext) iterator.next() //exhaust the iterator
@@ -28,7 +30,7 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
       iterator.next().execute(this)
     }
 
-    println("Finished " + (if (parallel) "parallel " else "") + "action: " + name)
+    log.debug("Finished " + (if (parallel) "parallel " else "") + "action: " + name)
 
     if (!action.equals(this)) {
       action.data = action.data ++ data
@@ -43,10 +45,10 @@ object Action {
   }
 }
 
-class Step(val name: String)(function: Action => Unit) {
+class Step(val name: String)(function: Action => Unit) extends Logging {
 
   def execute(action: Action): Unit = {
-    println("Executing step: " + name)
+    log.debug("Executing step: " + name)
     function(action)
     executeNextStep(action)
   }
