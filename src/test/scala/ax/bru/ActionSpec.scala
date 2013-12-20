@@ -69,7 +69,7 @@ class ActionSpec extends Specification {
     "contain 11 elements" in {
       action.data must have size(11)
     }
-    "timestamps in order 1,2,3,4,5,6,7,8_1,8_2,9,10" in {
+    "have timestamps in order 1,2,3,4,5,6,7,8_1,8_2,9,10" in {
       var map: Map[String, Long] = Map[String, Long]()
       for {
         (key, value) <- action.data.toList
