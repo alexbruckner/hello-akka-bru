@@ -63,7 +63,7 @@ class ActionSpec extends Specification {
 
   val step8SubAction = Action(name = "Step 8 sub action")(step8_1, step8_2)
   val anotherAction7To9 = Action(name = "Action for STEP 7 and STEP 8 and STEP 9")(step7, step8SubAction, step9)
-  val action: Action = Action(name = "MAIN ACTION")(step1, step2, parallelAction3To5, step6, anotherAction7To9, step10).perform()
+  val action: Action = Action(name = "MAIN ACTION", akka = true)(step1, step2, parallelAction3To5, step6, anotherAction7To9, step10).perform()
 
   "\n\nAction data" should {
     "contain 11 elements" in {
