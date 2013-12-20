@@ -82,7 +82,7 @@ class Step(val name: String)(function: Action => Unit) extends Logging {
 
   def convertToActor(step: Step): ActorRef = {
     val system = ActorSystem("Actions")
-    system.actorOf(Props[StepActor], ""+step.hashCode())
+    system.actorOf(Props[StepActor])
   }
 
 }
