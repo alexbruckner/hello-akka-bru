@@ -15,6 +15,7 @@ class ActionSpec extends Specification {
   )
 
   val step3 = Step((action: Action) => {
+    Thread.sleep(1000)
     action.set("step3", System.nanoTime())
   }
   )
@@ -65,9 +66,12 @@ class ActionSpec extends Specification {
   val anotherAction7To9 = Action(name = "Action for STEP 7 and STEP 8 and STEP 9")(step7, step8SubAction, step9)
   val action: Action = Action(name = "MAIN ACTION", akka = true)(step1, step2, parallelAction3To5, step6, anotherAction7To9, step10).perform()
 
+
+  Thread.sleep(2000)
+
   "\n\nAction data" should {
     "contain 11 elements" in {
-      action.data must have size(11)
+      action.data must have size (11)
     }
     "have timestamps in order 1,2,3,4,5,6,7,8_1,8_2,9,10" in {
       var map: Map[String, Long] = Map[String, Long]()
@@ -80,6 +84,7 @@ class ActionSpec extends Specification {
     }
 
   }
+
 
 
 

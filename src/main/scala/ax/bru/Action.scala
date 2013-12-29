@@ -26,16 +26,14 @@ class Action(override val name: String, val steps: Seq[Step], val parallel: Bool
   override def execute(action: Action) = {
     log.debug("Running " + (if (parallel) "parallel " else "") + "action: " + name)
 
-//    if (parallel) {
-//      while (iterator.hasNext) iterator.next() //exhaust the iterator
-//      if(akka){
-//        steps.foreach(_.execute(this))
-//      } else {
-//        steps.foreach(_.act(this))
-//      }
-//      // TODO a check that steps 3-5 have completed (as another step or part of framework)
-//    } else
-    {
+    if (parallel) {
+      while (iterator.hasNext) iterator.next() //exhaust the iterator
+      if (akka) {
+        steps.foreach(_.act(this))
+      } else {
+        steps.foreach(_.execute(this))
+      }
+    } else {
       if (akka) {
         iterator.next().act(this)
       } else {
@@ -67,7 +65,7 @@ class Step(val name: String)(function: Action => Unit) extends Logging {
   }
 
   def executeNextStep(action: Action): Unit = if (action.iterator.hasNext) {
-    if(action.akka){
+    if (action.akka) {
       action.iterator.next().act(action)
     } else {
       action.iterator.next().execute(action)
@@ -75,7 +73,7 @@ class Step(val name: String)(function: Action => Unit) extends Logging {
   }
 
   // actor version
-  def act(action: Action):Unit = {
+  def act(action: Action): Unit = {
     action.currentStep = this
     convertToActor(this) ! action
   }
@@ -100,3 +98,4 @@ class StepActor extends Actor {
     case action: Action => action.currentStep.execute(action); context.stop(self)
   }
 }
+
