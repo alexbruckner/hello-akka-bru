@@ -4,12 +4,12 @@ import org.eintr.loglady.Logging
 
 object Action {
   def apply(name: String): Action = {
-    new Action(name, false)
+    new Action(name, false)()
   }
 }
 
 class Action(val name: String,
-             val parallel: Boolean) extends Iterable[Step] with Logging {
+             val parallel: Boolean)(block: => Unit) extends Logging {
 
   var steps: List[Step] = List[Step]()
 
@@ -24,22 +24,30 @@ class Action(val name: String,
     s"Action(name: $name, parallel: $parallel)"
   }
 
-  def iterator: Iterator[Step] = allSteps(this).reverse.iterator
+  //  def iterator: Iterator[Step] = allSteps(this).reverse.iterator
+  //
+  //  def allSteps(action: Action): List[Step] = {
+  //
+  //    var steps: List[Step] = List()
+  //
+  //    for (step <- action.steps) {
+  //      if (step.action != null && step.action.steps.size > 0) {
+  //        steps = allSteps(step.action) ::: List(step) ::: steps
+  //      }
+  //      else steps ::= step
+  //    }
+  //
+  //    steps
+  //  }
 
-  def allSteps(action: Action): List[Step] = {
-
-    var steps: List[Step] = List()
-
-    for (step <- action.steps) {
-
-      if (step.action != null) {
-        steps = allSteps(step.action) ::: steps
+  def execute() {
+    if (steps.size > 0) {
+      for (step <- steps.iterator) {
+        step.execute()
       }
-
-      else steps ::= step
+    } else {
+      block
     }
-
-    steps
   }
 
 }
@@ -49,19 +57,20 @@ class Step(val num: Int,
 
   var action: Action = null
 
-  def setFurtherAction(name: String, parallel: Boolean = false): Action = {
-    val action = new Action(name, parallel)
+  def setAction(name: String, parallel: Boolean = false): Action = {
+    val action = new Action(name, parallel)()
     log.debug(s"setting action $action for step $this")
     this.action = action
     action
   }
 
-//  def setExecutionBlock(block: => Unit) {
-//    if (action != null) {
-//      log.warn("Ignoring execution block as further action is set.")
-//    }
-//    log.info("to be implemented...")
-//  }
+  def setExecutable(block: => Unit) {
+    action = new Action("block", false)(block)
+  }
+
+  def execute() {
+    action.execute()
+  }
 
   override def toString(): String = {
     s"Step(stepNum: $num, name: $name)"

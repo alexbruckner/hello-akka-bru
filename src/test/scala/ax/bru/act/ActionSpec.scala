@@ -6,27 +6,29 @@ class ActionSpec extends Specification {
 
   //Action 1
   val action: Action = Action("Action 1")
-  action.addStep("1-1")//.setExecutionBlock({println('test)})
-  action.addStep("1-2")
-  val action2: Action = action.addStep("1-3").setFurtherAction("Action 2 (1-3)") // inner action with further steps , TODO code block for direct execution as direct action
-  action.addStep("1-4")
+  action.addStep("1-1").setExecutable({println("exec 1-1")})
+  action.addStep("1-2").setExecutable({println("exec 1-2")})
+  val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)") // inner action with further steps , TODO code block for direct execution as direct action
+  action.addStep("1-4").setExecutable({println("exec 1-4")})
 
   //Action 2 (1-3)
-  val action3 = action2.addStep("2-1").setFurtherAction("Action 3 (2-1)", parallel = true)
-  action2.addStep("2-2")
+  val action3 = action2.addStep("2-1").setAction("Action 3 (2-1)", parallel = true)
+  action2.addStep("2-2").setExecutable({println("exec 2-2")})
 
   //Action 3 (2-1)
-  action3.addStep("3-1")
-  action3.addStep("3-2")
-  val action4 = action3.addStep("3-3").setFurtherAction("Action 4 (3-3)", parallel = true)
+  action3.addStep("3-1").setExecutable({println("exec 3-1")})
+  action3.addStep("3-2").setExecutable({println("exec 3-2")})
+  val action4 = action3.addStep("3-3").setAction("Action 4 (3-3)", parallel = true)
 
   //Action 4 (3-3)
-  action4.addStep("4-1")
-  action4.addStep("4-2")
+  action4.addStep("4-1").setExecutable({println("exec 4-1")})
+  action4.addStep("4-2").setExecutable({println("exec 4-2")})
 
-  for (step <- action){
-    println(step)
-  }
+//  for (step <- action){
+//    println(step)
+//  }
+
+  action.execute()
 
 
   "\n\nAction " should {
