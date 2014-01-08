@@ -1,30 +1,45 @@
-import org.scalatest.{BeforeAndAfterAll, FlatSpec}
-import org.scalatest.concurrent._
-import org.scalatest.matchers.ShouldMatchers
-import akka.actor.{Actor, Props, ActorSystem}
-import akka.testkit.{ImplicitSender, TestKit, TestActorRef}
-import scala.concurrent.duration._
+package ax.bru.act
 
-class ActionSpec(_system: ActorSystem)
-  extends TestKit(_system)
-  with ImplicitSender
-  with ShouldMatchers
-  with FlatSpec
-  with BeforeAndAfterAll {
+import org.specs2.mutable._
 
-  def this() = this(ActorSystem("action"))
+class ActionSpec extends Specification {
 
-  override def afterAll: Unit = {
-    system.shutdown()
-    system.awaitTermination(10.seconds)
+  //Action 1
+  val action: Action = Action("Action 1")
+  action.addStep("1-1")//.setExecutionBlock({println('test)})
+  action.addStep("1-2")
+  val action2: Action = action.addStep("1-3").setFurtherAction("Action 2 (1-3)") // inner action with further steps , TODO code block for direct execution as direct action
+  action.addStep("1-4")
+
+  //Action 2 (1-3)
+  val action3 = action2.addStep("2-1").setFurtherAction("Action 3 (2-1)", parallel = true)
+  action2.addStep("2-2")
+
+  //Action 3 (2-1)
+  action3.addStep("3-1")
+  action3.addStep("3-2")
+  val action4 = action3.addStep("3-3").setFurtherAction("Action 4 (3-3)", parallel = true)
+
+  //Action 4 (3-3)
+  action4.addStep("4-1")
+  action4.addStep("4-2")
+
+  for (step <- action){
+    println(step)
   }
 
-  it should "be able to get a new greeting" in {
-    val action = system.actorOf(Props[ax.bru.act.ActionActor], "action")
-    action ! "testing"
 
-    expectMsg("testing. ok.")
+  "\n\nAction " should {
+    "blah 11 elements" in {
+      //action.data must have size (11)
+      true
+    }
+
+
   }
+
+
 
 
 }
+
