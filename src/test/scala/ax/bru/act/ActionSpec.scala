@@ -37,12 +37,12 @@ class ActionSpec extends Specification {
   }
 
   def displayAction(action: Action) {
-    import javax.swing._
+    import javax.swing.{JFrame, JLabel}
     val frame = new JFrame()
     frame.setVisible(true)
     val l = new JLabel
     frame.getContentPane.add(l)
-    val html = action.toHtml()
+    val html = Action.toHtml(action)
     l.setText(s"<html>$html</html>")
     frame.pack()
   }

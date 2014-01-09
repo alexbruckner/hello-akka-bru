@@ -6,6 +6,35 @@ object Action {
   def apply(name: String): Action = {
     new Action(name, false)()
   }
+  def toHtml(action: Action): String = {
+
+    val name = action.name;
+
+    val stepBuilder: StringBuilder = new StringBuilder
+
+    stepBuilder.append(s"<table border=1><tr><th colspan=2 style='background-color:lightgray; font-weight:normal;'>$name</th></tr>")
+
+    if (action.parallel) stepBuilder.append("<tr>")
+
+    for (step <- action.steps.iterator) {
+      if (! action.parallel) stepBuilder.append("<tr>")
+      stepBuilder.append("<th style='background-color:red;'>").append(Action.toHtml(step)).append("</th>")
+      if (! action.parallel) stepBuilder.append("</tr>")
+    }
+
+    if (action.parallel) stepBuilder.append("</tr>")
+
+    stepBuilder.append("</table>")
+
+    stepBuilder.toString()
+
+  }
+
+  def toHtml(step: Step): String = {
+    val name = step.name;
+    if (step.action != null && step.action.steps.size > 0) Action.toHtml(step.action) else s"$name"
+  }
+
 }
 
 class Action(val name: String,
@@ -20,27 +49,7 @@ class Action(val name: String,
     step
   }
 
-  def toHtml(): String = {
 
-    val stepBuilder: StringBuilder = new StringBuilder
-
-    stepBuilder.append(s"<table border=1><tr><th colspan=2 style='background-color:lightgray; font-weight:normal;'>$name</th></tr>")
-
-    if (parallel) stepBuilder.append("<tr>")
-
-    for (step <- steps.iterator) {
-      if (! parallel) stepBuilder.append("<tr>")
-      stepBuilder.append("<th style='background-color:red;'>").append(step.toHtml()).append("</th>")
-      if (! parallel) stepBuilder.append("</tr>")
-    }
-
-    if (parallel) stepBuilder.append("</tr>")
-
-    stepBuilder.append("</table>")
-
-    stepBuilder.toString()
-
-  }
 
   def execute() {
     if (steps.size > 0) {
@@ -72,10 +81,6 @@ class Step(val name: String) extends Logging {
 
   def execute() {
     action.execute()
-  }
-
-  def toHtml(): String = {
-    if (action != null && action.steps.size > 0) action.toHtml() else s"$name"
   }
 
 }
