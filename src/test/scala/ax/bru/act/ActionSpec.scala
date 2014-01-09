@@ -1,6 +1,7 @@
 package ax.bru.act
 
 import org.specs2.mutable._
+import javax.swing.JTable
 
 class ActionSpec extends Specification {
 
@@ -24,13 +25,9 @@ class ActionSpec extends Specification {
   action4.addStep("4-1").setExecutable({println("exec 4-1")})
   action4.addStep("4-2").setExecutable({println("exec 4-2")})
 
-  println
+  displayAction(action)
 
   action.execute()
-
-  println
-
-  println(action.toHtml())
 
 
   "\n\nAction " should {
@@ -38,11 +35,18 @@ class ActionSpec extends Specification {
       //action.data must have size (11)
       true
     }
-
   }
 
-
-
+  def displayAction(action: Action) {
+    import javax.swing._
+    val frame = new JFrame()
+    frame.setVisible(true)
+    val l = new JLabel
+    frame.getContentPane.add(l)
+    val html = action.toHtml()
+    l.setText(s"<html>$html</html>")
+    frame.pack
+  }
 
 }
 
