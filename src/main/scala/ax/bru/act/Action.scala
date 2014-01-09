@@ -14,31 +14,33 @@ class Action(val name: String,
   var steps: List[Step] = List[Step]()
 
   def addStep(name: String): Step = {
-    val step: Step = new Step(steps.size, name)
+    val step: Step = new Step(name)
     log.debug(s"adding step $step to action $this")
     steps = steps ::: List(step)
     step
   }
 
-  override def toString(): String = {
-    s"Action(name: $name, parallel: $parallel)"
-  }
+  def toHtml(): String = {
 
-  //  def iterator: Iterator[Step] = allSteps(this).reverse.iterator
-  //
-  //  def allSteps(action: Action): List[Step] = {
-  //
-  //    var steps: List[Step] = List()
-  //
-  //    for (step <- action.steps) {
-  //      if (step.action != null && step.action.steps.size > 0) {
-  //        steps = allSteps(step.action) ::: List(step) ::: steps
-  //      }
-  //      else steps ::= step
-  //    }
-  //
-  //    steps
-  //  }
+    val stepBuilder: StringBuilder = new StringBuilder
+
+    stepBuilder.append(s"<table border=1><tr><th colspan=2 style='background-color:lightgray; font-weight:normal;'>$name</th></tr>")
+
+    if (parallel) stepBuilder.append("<tr>")
+
+    for (step <- steps.iterator) {
+      if (! parallel) stepBuilder.append("<tr>")
+      stepBuilder.append("<th style='background-color:red;'>").append(step.toHtml()).append("</th>")
+      if (! parallel) stepBuilder.append("</tr>")
+    }
+
+    if (parallel) stepBuilder.append("</tr>")
+
+    stepBuilder.append("</table>")
+
+    stepBuilder.toString()
+
+  }
 
   def execute() {
     if (steps.size > 0) {
@@ -52,19 +54,19 @@ class Action(val name: String,
 
 }
 
-class Step(val num: Int,
-           val name: String) extends Logging {
+class Step(val name: String) extends Logging {
 
   var action: Action = null
 
   def setAction(name: String, parallel: Boolean = false): Action = {
     val action = new Action(name, parallel)()
-    log.debug(s"setting action $action for step $this")
+    log.debug(s"setting further action $action for step $this")
     this.action = action
     action
   }
 
   def setExecutable(block: => Unit) {
+    log.debug(s"setting executable block for step $this")
     action = new Action("block", false)(block)
   }
 
@@ -72,8 +74,8 @@ class Step(val num: Int,
     action.execute()
   }
 
-  override def toString(): String = {
-    s"Step(stepNum: $num, name: $name)"
+  def toHtml(): String = {
+    if (action != null && action.steps.size > 0) action.toHtml() else s"$name"
   }
 
 }

@@ -8,11 +8,11 @@ class ActionSpec extends Specification {
   val action: Action = Action("Action 1")
   action.addStep("1-1").setExecutable({println("exec 1-1")})
   action.addStep("1-2").setExecutable({println("exec 1-2")})
-  val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)") // inner action with further steps , TODO code block for direct execution as direct action
+  val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true) // inner action with further steps , TODO code block for direct execution as direct action
   action.addStep("1-4").setExecutable({println("exec 1-4")})
 
   //Action 2 (1-3)
-  val action3 = action2.addStep("2-1").setAction("Action 3 (2-1)", parallel = true)
+  val action3 = action2.addStep("2-1").setAction("Action 3 (2-1)")
   action2.addStep("2-2").setExecutable({println("exec 2-2")})
 
   //Action 3 (2-1)
@@ -24,11 +24,13 @@ class ActionSpec extends Specification {
   action4.addStep("4-1").setExecutable({println("exec 4-1")})
   action4.addStep("4-2").setExecutable({println("exec 4-2")})
 
-//  for (step <- action){
-//    println(step)
-//  }
+  println
 
   action.execute()
+
+  println
+
+  println(action.toHtml())
 
 
   "\n\nAction " should {
@@ -36,7 +38,6 @@ class ActionSpec extends Specification {
       //action.data must have size (11)
       true
     }
-
 
   }
 
