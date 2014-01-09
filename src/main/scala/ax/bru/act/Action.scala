@@ -42,7 +42,7 @@ object Action {
 }
 
 class Action(val name: String,
-             val parallel: Boolean, block: => Action => Unit)(var data: Map[String, String]) extends Logging {
+             val parallel: Boolean, block: => Action => Unit)(var data: Map[String, Any]) extends Logging {
 
   var steps: List[Step] = List()
 
@@ -63,15 +63,15 @@ class Action(val name: String,
     }
   }
 
-  def set(key: String, value: String) {
+  def set(key: String, value: Any) {
     data.put(key, value)
   }
 
-  def get(key: String): String = data.get(key)
+  def get(key: String): Any = data.get(key)
 
 }
 
-class Step(val name: String)(var data: Map[String, String]) extends Logging {
+class Step(val name: String)(var data: Map[String, Any]) extends Logging {
 
   var action: Action = null
 

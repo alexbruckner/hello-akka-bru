@@ -6,7 +6,7 @@ class ActionSpec extends Specification {
 
   //Action 1
   val action: Action = Action("Action 1")
-  action.addStep("1-1").setExecutable((action) => {println("exec 1-1"); action.set("test", "1")})
+  action.addStep("1-1").setExecutable((action) => {println("exec 1-1"); action.set("test", "muadib")})
   action.addStep("1-2").setExecutable((action) => {println("exec 1-2")})
   val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true)
   action.addStep("1-4").setExecutable((action) => {println("exec 1-4")})
@@ -21,7 +21,7 @@ class ActionSpec extends Specification {
   val action4 = action3.addStep("3-3").setAction("Action 4 (3-3)", parallel = true)
 
   //Action 4 (3-3)
-  action4.addStep("4-1").setExecutable((action) => {println("exec 4-1"); action.set("bla", "blah")})
+  action4.addStep("4-1").setExecutable((action) => {println("exec 4-1"); action.set("bla", 1234)})
   action4.addStep("4-2").setExecutable((action) => {println("exec 4-2")})
 
   displayAction(action)
