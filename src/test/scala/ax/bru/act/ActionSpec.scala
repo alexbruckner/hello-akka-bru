@@ -21,15 +21,16 @@ class ActionSpec extends Specification {
   val action4 = action3.addStep("3-3").setAction("Action 4 (3-3)", parallel = true)
 
   //Action 4 (3-3)
-  action4.addStep("4-1").setExecutable((action) => {println("exec 4-1"); action.set("bla", 1234)})
+  action4.addStep("4-1").setExecutable((action) => {println("exec 4-1"); action.set("bla" + action.get("test"), 1234)})
   action4.addStep("4-2").setExecutable((action) => {println("exec 4-2")})
 
   displayAction(action)
 
+  Thread.sleep(5000)
+
   action.execute()
 
   println(action.data)
-
 
   "\n\nAction " should {
     "blah 11 elements" in {
