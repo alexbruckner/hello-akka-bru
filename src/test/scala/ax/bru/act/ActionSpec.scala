@@ -1,7 +1,6 @@
 package ax.bru.act
 
 import org.specs2.mutable._
-import javax.swing.JTable
 
 class ActionSpec extends Specification {
 
@@ -9,7 +8,7 @@ class ActionSpec extends Specification {
   val action: Action = Action("Action 1")
   action.addStep("1-1").setExecutable({println("exec 1-1")})
   action.addStep("1-2").setExecutable({println("exec 1-2")})
-  val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true) // inner action with further steps , TODO code block for direct execution as direct action
+  val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true)
   action.addStep("1-4").setExecutable({println("exec 1-4")})
 
   //Action 2 (1-3)
@@ -45,7 +44,7 @@ class ActionSpec extends Specification {
     frame.getContentPane.add(l)
     val html = action.toHtml()
     l.setText(s"<html>$html</html>")
-    frame.pack
+    frame.pack()
   }
 
 }
