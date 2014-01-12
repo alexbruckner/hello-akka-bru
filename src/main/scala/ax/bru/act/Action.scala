@@ -35,7 +35,7 @@ object Action {
 
   private def toHtml(step: Step): String = {
     val name = step.name
-    if (step.action != null && step.action.hasFurtherActions) Action.toHtml(step.action) else s"$name"
+    if (step.action != null && step.action.hasSteps) Action.toHtml(step.action) else s"$name"
   }
 
 
@@ -53,14 +53,14 @@ class Action(val name: String,
     step
   }
   
-  def hasFurtherActions = steps.size > 0
+  def hasSteps = steps.size > 0
 
   def execute() {
-    if (hasFurtherActions) {
+    if (hasSteps) {
       for (step <- steps.iterator) {
         step.execute()
       }
-    } else {
+    } else { // execute stepless action
       function(this)
     }
   }
