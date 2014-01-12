@@ -35,14 +35,14 @@ object Action {
 
   private def toHtml(step: Step): String = {
     val name = step.name
-    if (step.action != null && step.action.steps.size > 0) Action.toHtml(step.action) else s"$name"
+    if (step.action != null && step.action.hasFurtherActions) Action.toHtml(step.action) else s"$name"
   }
 
 
 }
 
 class Action(val name: String,
-             val parallel: Boolean, block: => Action => Unit)(var data: Map[String, Any]) extends Logging {
+             val parallel: Boolean, function: => Action => Unit)(val data: Map[String, Any]) extends Logging {
 
   var steps: List[Step] = List()
 
@@ -52,14 +52,16 @@ class Action(val name: String,
     steps = steps ::: List(step)
     step
   }
+  
+  def hasFurtherActions = steps.size > 0
 
   def execute() {
-    if (steps.size > 0) {
+    if (hasFurtherActions) {
       for (step <- steps.iterator) {
         step.execute()
       }
     } else {
-      block(this)
+      function(this)
     }
   }
 
@@ -82,9 +84,9 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
     action
   }
 
-  def setExecutable(block: => (Action) => Unit) {
-    log.debug(s"setting executable block for step $this")
-    action = new Action("block", false, block)(data)
+  def setExecutable(function: => (Action) => Unit) {
+    log.debug(s"setting executable function for step $this")
+    action = new Action("executable", false, function)(data)
   }
 
   def execute() {
