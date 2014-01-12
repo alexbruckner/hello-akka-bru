@@ -20,7 +20,7 @@ class ActionActorSpec(_system: ActorSystem)
   }
 
   it should "be able to get a new greeting" in {
-    val action = system.actorOf(Props[ax.bru.act.ActionActor], "action")
+    val action = system.actorOf(Props[ax.bru.act.ActionTestActor], "action")
     action ! "testing"
 
     expectMsg("testing. ok.")

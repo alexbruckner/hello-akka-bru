@@ -38,7 +38,6 @@ object Action {
     if (step.hasFurtherActionSteps) Action.toHtml(step.action) else s"$name"
   }
 
-
 }
 
 class Action(val name: String,
@@ -55,6 +54,7 @@ class Action(val name: String,
   
   def hasSteps = steps.size > 0
 
+  // single-threaded sequential step execution TODO comment out to avoid confusion...?
   def execute() {
     if (hasSteps) {
       for (step <- steps.iterator) {
@@ -95,6 +95,7 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
 
   def hasFurtherActionSteps = this.hasAction && this.action.hasSteps
 
+  //TODO comment out to avoid confusion...?
   def execute() {
     action.execute()
   }
@@ -102,4 +103,10 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
   override def toString() = s"Step $name"
 
 }
+
+
+
+
+
+
 
