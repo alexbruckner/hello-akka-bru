@@ -35,7 +35,7 @@ object Action {
 
   private def toHtml(step: Step): String = {
     val name = step.name
-    if (step.action != null && step.action.hasSteps) Action.toHtml(step.action) else s"$name"
+    if (step.hasFurtherActionSteps) Action.toHtml(step.action) else s"$name"
   }
 
 
@@ -88,6 +88,10 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
     log.debug(s"setting executable function for step $this")
     action = new Action("executable", false, function)(data)
   }
+
+  def hasAction = this.action != null
+
+  def hasFurtherActionSteps = this.hasAction && this.action.hasSteps
 
   def execute() {
     action.execute()
