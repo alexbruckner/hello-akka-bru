@@ -71,6 +71,8 @@ class Action(val name: String,
 
   def get(key: String): Any = data.get(key)
 
+  override def toString() = s"Action $name"
+
 }
 
 class Step(val name: String)(var data: Map[String, Any]) extends Logging {
@@ -96,6 +98,8 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
   def execute() {
     action.execute()
   }
+
+  override def toString() = s"Step $name"
 
 }
 
