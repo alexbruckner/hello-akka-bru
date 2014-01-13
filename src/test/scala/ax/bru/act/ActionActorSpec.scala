@@ -23,7 +23,7 @@ class ActionActorSpec(_system: ActorSystem)
 
     ActionSystem.addAction(ExampleAction.action)
 
-    ActionSystem.perform(ExampleAction.action.name)
+    ActionSystem.perform(ExampleAction.action.name, ("key", "value"))
 
 //    expectMsg("ok.")
 

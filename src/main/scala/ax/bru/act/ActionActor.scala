@@ -20,9 +20,9 @@ class ActionSupervisor extends Actor with Logging {
       val actorRef = createActor(action)
       storeActor(action.name, actorRef)
 
-    case Get(action) => {
-      log.debug(s"Get($action)")
-      val ref = actions.get(action)
+    case Get(actionName) => {
+      log.debug(s"Get($actionName)")
+      val ref = actions.get(actionName)
       log.debug(s"found ref $ref")
       sender ! ref
     }
@@ -37,6 +37,14 @@ class ActionSupervisor extends Actor with Logging {
 
     log.debug(s"creating actor for $action")
     val actionActor = context.actorOf(Props[ActionActor])
+
+    if (action.hasSteps) {
+      actionActor ! AddSteps(action.steps)
+    }
+
+    else {
+      actionActor ! AddFunction(action.function)
+    }
 
     actionActor
 
@@ -54,12 +62,9 @@ object ActionSystem extends Logging {
 
   val actionSupervisor = system.actorOf(Props[ActionSupervisor], "ActionSupervisor")
 
-  var actions: Map[String, Action] = Map()
-
   def addAction(action: Action) {
     implicit val timeout = Timeout(5 seconds)
     actionSupervisor ! Add(action)
-    actions = actions.updated(action.name, action)
   }
 
   def getActor(action: String): Option[ActorRef] = {
@@ -72,11 +77,11 @@ object ActionSystem extends Logging {
     result
   }
 
-  def perform(action: String) {
+  def perform(action: String, data: Pair[String, Any] *) {
     val actor = getActor(action)
     if (actor.isDefined) {
       println("action is defined!")
-      actor.get ! actions.get(action).get
+      actor.get ! Message(data.toMap)
     } else {
       log.error(s"$action is not defined.")
     }
@@ -87,6 +92,8 @@ object ActionSystem extends Logging {
 
 case class Get(action: String)
 case class Add(action: Action)
+case class AddSteps(steps: List[Step])
+case class AddFunction(function: (Data) => Unit)
 
 //class StepActor extends Actor {
 //  def receive: Actor.Receive = LoggingReceive {
@@ -98,12 +105,19 @@ case class Add(action: Action)
 
 class ActionActor extends Actor {
   var steps: List[Step] = null
-  def receive: Actor.Receive = LoggingReceive {
-    case steps: List[Step] => this.steps = steps
-    case action: Action => {
-      println(s"received action: $action")
-    }
+  var function: (Data) => Unit = null
 
-    case msg => println(msg); throw new Error("invalid message received")
+  def receive: Actor.Receive = LoggingReceive {
+    case AddSteps(steps) => this.steps = steps
+    case AddFunction(function) => this.function = function
+    case Message(map) =>
+      println(s"received data $map for this action with steps: $steps")
+    case msg => println(msg); throw new Error(s"invalid message received: $msg")
   }
+}
+
+case class Message(var map: Map[String, Any]) extends Data {
+  def set(key: String, value: Any): Unit = map = map.updated(key, value)
+  def get(key: String): Any = map.get(key)
+  def getAll: Map[String, Any] = map
 }

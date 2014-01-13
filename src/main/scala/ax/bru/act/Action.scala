@@ -3,7 +3,15 @@ package ax.bru.act
 import org.eintr.loglady.Logging
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.Map
+import java.util.{Map => JMap}
+
+import scala.collection.JavaConverters._
+
+trait Data {
+  def set(key: String, value: Any): Unit
+  def get(key: String): Any
+  def getAll: Map[String, Any]
+}
 
 object Action {
   def apply(name: String): Action = {
@@ -41,7 +49,7 @@ object Action {
 }
 
 class Action(val name: String,
-             val parallel: Boolean, function: => Action => Unit)(val data: Map[String, Any]) extends Logging {
+             val parallel: Boolean, val function: (Data) => Unit)(val data: JMap[String, Any]) extends Logging with Data {
 
   var steps: List[Step] = List()
 
@@ -65,17 +73,19 @@ class Action(val name: String,
     }
   }
 
-  def set(key: String, value: Any) {
+  override def set(key: String, value: Any) {
     data.put(key, value)
   }
 
-  def get(key: String): Any = data.get(key)
+  override def get(key: String): Any = data.get(key)
+
+  override def getAll: Map[String, Any] = data.asScala.toMap
 
   override def toString() = s"Action $name"
 
 }
 
-class Step(val name: String)(var data: Map[String, Any]) extends Logging {
+class Step(val name: String)(var data: JMap[String, Any]) extends Logging {
 
   var action: Action = null
 
@@ -86,7 +96,7 @@ class Step(val name: String)(var data: Map[String, Any]) extends Logging {
     action
   }
 
-  def setExecutable(function: => (Action) => Unit) {
+  def setExecutable(function: (Data) => Unit) {
     log.debug(s"setting executable function for step $this")
     action = new Action("executable", false, function)(data)
   }
