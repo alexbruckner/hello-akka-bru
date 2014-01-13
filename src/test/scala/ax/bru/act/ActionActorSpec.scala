@@ -1,8 +1,8 @@
+import ax.bru.act.{ExampleAction, ActionSystem}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
-import org.scalatest.concurrent._
 import org.scalatest.matchers.ShouldMatchers
-import akka.actor.{Actor, Props, ActorSystem}
-import akka.testkit.{ImplicitSender, TestKit, TestActorRef}
+import akka.actor.ActorSystem
+import akka.testkit.{ImplicitSender, TestKit}
 import scala.concurrent.duration._
 
 class ActionActorSpec(_system: ActorSystem)
@@ -12,7 +12,7 @@ class ActionActorSpec(_system: ActorSystem)
   with FlatSpec
   with BeforeAndAfterAll {
 
-  def this() = this(ActorSystem("action"))
+  def this() = this(ActorSystem("actions"))
 
   override def afterAll: Unit = {
     system.shutdown()
@@ -20,11 +20,19 @@ class ActionActorSpec(_system: ActorSystem)
   }
 
   it should "be able to get a new greeting" in {
-    val action = system.actorOf(Props[ax.bru.act.ActionTestActor], "action")
-    action ! "testing"
 
-    expectMsg("testing. ok.")
+    ActionSystem.addAction(ExampleAction.action)
+
+    ActionSystem.perform(ExampleAction.action.name)
+
+//    expectMsg("ok.")
+
+    Thread.sleep(2000)
+
   }
+
+
+
 
 
 }

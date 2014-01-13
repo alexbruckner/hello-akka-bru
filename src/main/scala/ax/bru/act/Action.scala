@@ -19,7 +19,7 @@ object Action {
 
     if (action.parallel) stepBuilder.append("<tr>")
 
-    for (step <- action.steps.iterator) {
+    for (step <- action.steps) {
       if (! action.parallel) stepBuilder.append("<tr>")
       stepBuilder.append("<th style='background-color:red;'>").append(Action.toHtml(step)).append("</th>")
       if (! action.parallel) stepBuilder.append("</tr>")
@@ -57,7 +57,7 @@ class Action(val name: String,
   // single-threaded sequential step execution TODO comment out to avoid confusion...?
   def execute() {
     if (hasSteps) {
-      for (step <- steps.iterator) {
+      for (step <- steps) {
         step.execute()
       }
     } else { // execute stepless action
