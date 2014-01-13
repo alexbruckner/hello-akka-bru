@@ -9,7 +9,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 
-class ActionSupervisor extends Actor with Logging {
+class ActionSupervisor extends Actor with Logging  {
 
   // contains the system wide defined 'top level' action names and the actor ref to the first actor for each action
   var actions: Map[String, ActorRef] = Map()
@@ -33,16 +33,14 @@ class ActionSupervisor extends Actor with Logging {
   }
 
   // create all actors for this action and return the first actors ref
-  def createActor(action: Action): ActorRef = {
+  private def createActor(action: Action): ActorRef = {
 
     log.debug(s"creating actor for $action")
     val actionActor = context.actorOf(Props[ActionActor])
 
     if (action.hasSteps) {
       actionActor ! AddSteps(action.steps)
-    }
-
-    else {
+    } else {
       actionActor ! AddFunction(action.function)
     }
 
@@ -50,7 +48,7 @@ class ActionSupervisor extends Actor with Logging {
 
   }
 
-  def storeActor(name: String, actor: ActorRef) {
+  private def storeActor(name: String, actor: ActorRef) {
     actions = actions.updated(name, actor)
   }
 
@@ -63,7 +61,6 @@ object ActionSystem extends Logging {
   val actionSupervisor = system.actorOf(Props[ActionSupervisor], "ActionSupervisor")
 
   def addAction(action: Action) {
-    implicit val timeout = Timeout(5 seconds)
     actionSupervisor ! Add(action)
   }
 
@@ -95,24 +92,54 @@ case class Add(action: Action)
 case class AddSteps(steps: List[Step])
 case class AddFunction(function: (Data) => Unit)
 
-//class StepActor extends Actor {
-//  def receive: Actor.Receive = LoggingReceive {
-//    case action: Action =>
-//    case _ => throw new Error("invalid message received")
-//  }
-//}
-//
+class StepActor extends Actor {
+  def receive: Actor.Receive = LoggingReceive {
+    case Add(action) => {
+      println(s"adding ACTION $action to $this ... TODO!!!!!")
+    }
+    case _ => throw new Error("invalid message received")
+    null
+  }
+}
 
-class ActionActor extends Actor {
-  var steps: List[Step] = null
+
+class ActionActor extends Actor with Logging {
+  var steps: List[ActorRef] = List()
   var function: (Data) => Unit = null
 
   def receive: Actor.Receive = LoggingReceive {
-    case AddSteps(steps) => this.steps = steps
+    case AddSteps(steps) => {
+      for (step <- steps){
+        val actorRef = createActor(step)
+        storeActor(actorRef)
+      }
+    }
     case AddFunction(function) => this.function = function
-    case Message(map) =>
-      println(s"received data $map for this action with steps: $steps")
+    case message: Message =>
+      val data = message.getAll
+      println(s"received data $data for this action with steps: $steps")
+      if (function != null) {
+        log.debug("executing function...")
+        function(message)
+      }
     case msg => println(msg); throw new Error(s"invalid message received: $msg")
+  }
+
+  def createActor(step: Step): ActorRef = {
+
+    log.debug(s"creating actor for $step")
+    val stepActor = context.actorOf(Props[StepActor])
+
+    if (step.hasAction) {
+      stepActor ! Add(step.action)
+    }
+
+    stepActor
+
+  }
+
+  def storeActor(actor: ActorRef) {
+    steps = steps ::: List(actor)
   }
 }
 
