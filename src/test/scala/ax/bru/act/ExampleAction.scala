@@ -1,5 +1,7 @@
 package ax.bru.act
 
+import ax.bru.defs.Action
+
 /**
  * Created by alexbruckner on 13/01/2014.
  */

@@ -1,6 +1,7 @@
 package ax.bru.act
 
 import org.specs2.mutable._
+import ax.bru.defs.Action
 
 class ActionSpec extends Specification {
 

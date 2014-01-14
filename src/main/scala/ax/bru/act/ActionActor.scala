@@ -1,137 +1,14 @@
 package ax.bru.act
 
-import akka.actor.{Props, ActorSystem, ActorRef, Actor}
+import akka.actor.{Props, ActorRef, Actor}
 import akka.event.LoggingReceive
 import org.eintr.loglady.Logging
+import ax.bru.defs.{Step, Data}
+import ax.bru.act.cases._
 
-//import scala.concurrent.Await
-//import akka.pattern.ask
-
-import akka.util.Timeout
-import scala.concurrent.duration._
-
-class ActionSupervisor extends Actions {
-
-  // contains the system wide defined 'top level' action names and the actor ref to the first actor for each action
-  var actions: Map[String, ActorRef] = Map()
-
-  def receive: Actor.Receive = LoggingReceive {
-
-    case Add(action) =>
-      addActor(action)
-
-    case Perform(actionName, map) =>
-      val actor = actions.get(actionName)
-      if (actor.isDefined) {
-        actor.get ! Message(map)
-      }
-
-    case message =>
-      log.error(s"wrong message type: $message")
-
-  }
-
-  override def storeActor(name: String, actor: ActorRef) {
-    actions = actions.updated(name, actor)
-  }
-
-}
-
-trait Actions extends Actor with Logging {
-
-  def addActor(action: Action) {
-    val actorRef = createActor(action)
-    storeActor(action.name, actorRef)
-  }
-
-  // create all actors for this action and return the first actors ref
-  private def createActor(action: Action): ActorRef = {
-
-    log.debug(s"creating actor for $action")
-    val actionActor = context.actorOf(Props[ActionActor], action.id)
-
-    if (action.hasSteps) {
-      //TODO check whether already exists in context (testcase with reusing action as part of another)
-      actionActor ! AddSteps(action.steps)
-    } else {
-      actionActor ! AddFunction(action.function)
-    }
-
-    actionActor
-
-  }
-
-  def storeActor(name: String, actor: ActorRef)
-}
-
-object ActionSystem extends Logging {
-
-  val timeout = 2 seconds
-
-  private val system = ActorSystem("Actions")
-
-  val actionSupervisor = system.actorOf(Props[ActionSupervisor], "ActionSupervisor")
-
-  def addAction(action: Action) {
-    actionSupervisor ! Add(action)
-  }
-
-  def perform(action: String, data: Pair[String, Any]*) {
-    actionSupervisor ! Perform(action, data.toMap)
-  }
-
-  //  def <-- (actor: ActorRef, message: Message): Option[Message] = {
-  //    implicit val timeout = Timeout(ActionSystem.timeout)
-  //    val future = actor ? message
-  //    Await.result(future, timeout.duration).asInstanceOf[Option[Message]]
-  //  }
-
-}
-
-
-case class Add(action: Action)
-
-case class Perform(actionName: String, data: Map[String, Any])
-
-case class AddSteps(steps: List[Step])
-
-case class AddFunction(function: (Data) => Unit)
-
-case class Link(actor: ActorRef)
-
-
-class StepActor extends Actions {
-
-  var action: ActorRef = null
-
-  var nextStep: ActorRef = null
-
-  def receive: Actor.Receive = LoggingReceive {
-    case Add(action) => {
-      log.debug(s"setting '$action' for step ${self.path}")
-      if (action != null) {
-        addActor(action)
-      }
-    }
-    case Link(actor) =>
-      nextStep = actor
-      if (action != null) action ! Link(nextStep)
-    case message: Message =>
-      if (action != null) {
-        action ! message
-      } else if (nextStep != null) {
-        nextStep ! message
-      }
-
-    case _ => throw new Error("invalid message received")
-  }
-
-  override def storeActor(name: String, actor: ActorRef) {
-    action = actor
-  }
-
-}
-
+/**
+ * Created by alexbruckner on 14/01/2014.
+ */
 class ActionActor extends Actor with Logging {
   var steps: List[ActorRef] = List()
   var function: (Data) => Unit = null
@@ -190,8 +67,3 @@ class ActionActor extends Actor with Logging {
 
 }
 
-case class Message(var map: Map[String, Any]) extends Data {
-  def set(key: String, value: Any): Unit = map = map.updated(key, value)
-  def get(key: String): Any = map.get(key)
-  def getAll: Map[String, Any] = map
-}
