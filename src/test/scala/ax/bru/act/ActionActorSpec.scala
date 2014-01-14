@@ -27,7 +27,7 @@ class ActionActorSpec(_system: ActorSystem)
 
 //    expectMsg("ok.")
 
-    Thread.sleep(2000)
+    Thread.sleep(5000)
 
   }
 
