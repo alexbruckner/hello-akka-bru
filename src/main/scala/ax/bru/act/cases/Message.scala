@@ -9,7 +9,10 @@ import akka.actor.ActorRef
  */
 case class Message(var map: Map[String, Any]) extends Data {
   def set(key: String, value: Any): Unit = map = map.updated(key, value)
-  def get(key: String): Any = map.get(key)
+  def get(key: String): Any = {
+    val result = map.get(key)
+    if (result.isDefined) result.get else "undefined"
+  }
   def getAll: Map[String, Any] = map
 }
 
