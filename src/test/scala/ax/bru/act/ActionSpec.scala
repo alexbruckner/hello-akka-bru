@@ -17,6 +17,8 @@ class ActionSpec extends Specification {
 
   println(action.id)
 
+  println(action.steps(2).id)
+
   "\n\nAction " should {
     "blah 11 elements" in {
       //action.data must have size (11)

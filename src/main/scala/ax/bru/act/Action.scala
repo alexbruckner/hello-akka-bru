@@ -47,7 +47,8 @@ object Action {
   }
 
   def getId(name: String): String = {
-    name.replace(' ', '_')
+    name.filter((c) =>
+      (('a' to 'z') contains c.toLower) || ('0' to '9' contains c) || c == ' ').replace(' ', '_')
   }
 
 }

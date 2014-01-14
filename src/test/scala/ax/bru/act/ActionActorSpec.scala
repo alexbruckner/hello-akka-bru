@@ -23,6 +23,8 @@ class ActionActorSpec(_system: ActorSystem)
 
     ActionSystem.addAction(ExampleAction.action)
 
+    Thread.sleep(2000)
+
     ActionSystem.perform(ExampleAction.action.name, ("key", "value"))
 
 //    expectMsg("ok.")

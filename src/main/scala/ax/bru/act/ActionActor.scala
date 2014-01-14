@@ -6,6 +6,7 @@ import org.eintr.loglady.Logging
 
 //import scala.concurrent.Await
 //import akka.pattern.ask
+
 import akka.util.Timeout
 import scala.concurrent.duration._
 
@@ -79,16 +80,15 @@ object ActionSystem extends Logging {
     actionSupervisor ! Perform(action, data.toMap)
   }
 
-//  def <-- (actor: ActorRef, message: Message): Option[Message] = {
-//    implicit val timeout = Timeout(ActionSystem.timeout)
-//    val future = actor ? message
-//    Await.result(future, timeout.duration).asInstanceOf[Option[Message]]
-//  }
+  //  def <-- (actor: ActorRef, message: Message): Option[Message] = {
+  //    implicit val timeout = Timeout(ActionSystem.timeout)
+  //    val future = actor ? message
+  //    Await.result(future, timeout.duration).asInstanceOf[Option[Message]]
+  //  }
 
 }
 
 
-//case class Get(action: String)
 case class Add(action: Action)
 
 case class Perform(actionName: String, data: Map[String, Any])
@@ -99,6 +99,7 @@ case class AddFunction(function: (Data) => Unit)
 
 case class Link(actor: ActorRef)
 
+
 class StepActor extends Actions {
 
   var action: ActorRef = null
@@ -107,8 +108,8 @@ class StepActor extends Actions {
 
   def receive: Actor.Receive = LoggingReceive {
     case Add(action) => {
-      log.debug(s"adding ACTION $action to ${self.path}")
-      if (action == null) {
+      log.debug(s"setting $action for step ${self.path}")
+      if (action != null) { // todo necessary check?
         addActor(action)
       }
     }
@@ -117,15 +118,14 @@ class StepActor extends Actions {
       nextStep = actor
     case message: Message =>
       log.debug(s"${self.path} received message.")
-      if (nextStep != null) {
 
-        // TODO set next steps also for action (if defined) with last step being next one.
-
+      if (action != null) {
+        action ! message // todo action needs to know next step to go to once complete
+      } else if (nextStep != null) {
         nextStep ! message
       }
 
     case _ => throw new Error("invalid message received")
-      null
   }
 
   override def storeActor(name: String, actor: ActorRef) {
@@ -138,6 +138,7 @@ class StepActor extends Actions {
 class ActionActor extends Actor with Logging {
   var steps: List[ActorRef] = List()
   var function: (Data) => Unit = null
+  var nextStep: ActorRef = null
 
   def receive: Actor.Receive = LoggingReceive {
     case AddSteps(steps) => {
@@ -148,16 +149,23 @@ class ActionActor extends Actor with Logging {
         storeActor(actorRef)
       }
     }
+    case Link(actor) =>
+      log.debug(s"${self.path} has now next step ${actor.path}")
+      nextStep = actor // todo get rid of this and link direct?
+      linkLastToThis(nextStep)
     case AddFunction(function) => this.function = function
     case message: Message =>
       val data = message.getAll
-      log.debug(s"received data $data at ${self.path} with steps: $steps")
+      log.debug(s"received message with $data at ${self.path}")
       if (steps.size > 0) {
         // todo parallel case
         steps(0) ! message
       } else if (function != null) {
         log.debug("executing function...")
         function(message)
+        if (nextStep != null) {
+          nextStep ! message
+        }
       }
     case msg => log.debug(s"$msg"); throw new Error(s"invalid message received: $msg")
   }
@@ -176,7 +184,7 @@ class ActionActor extends Actor with Logging {
   }
 
   def linkLastToThis(actor: ActorRef) {
-    if (steps.size > 0){
+    if (steps.size > 0) {
       steps.last ! Link(actor)
     }
   }
