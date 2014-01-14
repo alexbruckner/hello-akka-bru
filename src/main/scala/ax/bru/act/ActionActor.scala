@@ -108,19 +108,17 @@ class StepActor extends Actions {
 
   def receive: Actor.Receive = LoggingReceive {
     case Add(action) => {
-      log.debug(s"setting $action for step ${self.path}")
-      if (action != null) { // todo necessary check?
+      log.debug(s"setting '$action' for step ${self.path}")
+      if (action != null) {
         addActor(action)
       }
     }
     case Link(actor) =>
-      log.debug(s"${self.path} has now next step ${actor.path}")
       nextStep = actor
+      if (action != null) action ! Link(nextStep)
     case message: Message =>
-      log.debug(s"${self.path} received message.")
-
       if (action != null) {
-        action ! message // todo action needs to know next step to go to once complete
+        action ! message
       } else if (nextStep != null) {
         nextStep ! message
       }
@@ -133,7 +131,6 @@ class StepActor extends Actions {
   }
 
 }
-
 
 class ActionActor extends Actor with Logging {
   var steps: List[ActorRef] = List()
@@ -151,17 +148,15 @@ class ActionActor extends Actor with Logging {
     }
     case Link(actor) =>
       log.debug(s"${self.path} has now next step ${actor.path}")
-      nextStep = actor // todo get rid of this and link direct?
+      nextStep = actor
       linkLastToThis(nextStep)
     case AddFunction(function) => this.function = function
     case message: Message =>
       val data = message.getAll
-      log.debug(s"received message with $data at ${self.path}")
       if (steps.size > 0) {
         // todo parallel case
         steps(0) ! message
       } else if (function != null) {
-        log.debug("executing function...")
         function(message)
         if (nextStep != null) {
           nextStep ! message
@@ -193,13 +188,10 @@ class ActionActor extends Actor with Logging {
     steps = steps ::: List(actor)
   }
 
-
 }
 
 case class Message(var map: Map[String, Any]) extends Data {
   def set(key: String, value: Any): Unit = map = map.updated(key, value)
-
   def get(key: String): Any = map.get(key)
-
   def getAll: Map[String, Any] = map
 }
