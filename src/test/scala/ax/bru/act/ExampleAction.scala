@@ -1,10 +1,13 @@
 package ax.bru.act
 
 import ax.bru.defs.Action
+import ax.bru.java.TestAnnotation
+import ax.bru.annot.Awesome
 
 /**
  * Created by alexbruckner on 13/01/2014.
  */
+
 object ExampleAction {
   //Action 1
   val action: Action = Action("Action 1")
@@ -26,3 +29,7 @@ object ExampleAction {
   action4.addStep("4-1").setExecutable((action) => {println("exec 4-1"); action.set("bla" + action.get("test"), 1234)})
   action4.addStep("4-2").setExecutable((action) => {println(s"exec 4-2")})
 }
+
+@TestAnnotation("woohoo!") // java version
+@Awesome("we are awesome!") // scala version
+class ExampleAction

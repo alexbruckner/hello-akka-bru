@@ -16,9 +16,12 @@ class ActionSpec extends Specification {
 
   println(action.data)
 
-  println(action.id)
-
-  println(action.steps(2).id)
+  // test annotation
+  import scala.reflect.runtime.universe._
+  val clazz = classOf[ExampleAction]
+  val mirror = runtimeMirror(clazz.getClassLoader)
+  val symbol = mirror.classSymbol(clazz)
+  println(symbol.annotations)
 
   "\n\nAction " should {
     "blah 11 elements" in {
