@@ -46,12 +46,17 @@ object Action {
     if (step.hasFurtherActionSteps) Action.toHtml(step.action) else s"$name"
   }
 
+  def getId(action: Action): String = {
+    action.name.replace(' ', '_')
+  }
+
 }
 
 class Action(val name: String,
              val parallel: Boolean, val function: (Data) => Unit)(val data: JMap[String, Any]) extends Logging with Data {
 
   var steps: List[Step] = List()
+  val id = Action.getId(this)
 
   def addStep(name: String): Step = {
     val step: Step = new Step(name)(data)
