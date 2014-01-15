@@ -36,6 +36,12 @@ class ActionActor extends Actor with Logging {
         function(message)
         if (nextStep != null) {
           nextStep ! message.withRecord(self)
+        } else {
+          // return to sender
+          //todo check this is the action exit point for all possible action configurations
+          if (message.sender != null) {
+            message.sender ! message.withRecord(self)
+          }
         }
       }
     case msg => log.debug(s"$msg"); throw new Error(s"invalid message received: $msg")

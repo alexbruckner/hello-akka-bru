@@ -17,10 +17,10 @@ class ActionSupervisor extends Actions {
     case Add(action) =>
       addActor(action)
 
-    case Perform(actionName, map) =>
+    case Perform(actionName, map, sender) =>
       val actor = actions.get(actionName)
       if (actor.isDefined) {
-        actor.get ! Message(map).withRecord(self)
+        actor.get ! Message(map).withRecord(self).withSender(sender)
       }
 
     case message =>

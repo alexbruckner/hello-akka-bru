@@ -1,3 +1,4 @@
+import ax.bru.act.cases.Message
 import ax.bru.act.{ExampleAction, ActionSystem}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
@@ -19,25 +20,12 @@ class ActionActorSpec(_system: ActorSystem)
     system.awaitTermination(10.seconds)
   }
 
-  it should "be able to get a new greeting" in {
+  ActionSystem.addAction(ExampleAction.action)
 
-    ActionSystem.addAction(ExampleAction.action)
-
-    Thread.sleep(2000)
-
-    ActionSystem.perform(ExampleAction.action.name, ("key", "value"))
-
-//    expectMsg("ok.")
-
-    Thread.sleep(5000)
-
-
-
-
+  it should "return message to sender with 8 map entries" in {
+    ActionSystem.perform(self, ExampleAction.action.name, ("key", "value"))
+    val received: Message = receiveOne(5 seconds).asInstanceOf[Message]
+    received.getAll.size == 8
   }
-
-
-
-
 
 }

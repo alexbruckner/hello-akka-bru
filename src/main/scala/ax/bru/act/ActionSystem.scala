@@ -1,6 +1,6 @@
 package ax.bru.act
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorRef, Props, ActorSystem}
 import org.eintr.loglady.Logging
 import ax.bru.defs.{Action}
 
@@ -27,6 +27,11 @@ object ActionSystem extends Logging {
 
   def perform(action: String, data: Pair[String, Any]*) {
     actionSupervisor ! Perform(action, data.toMap)
+  }
+
+  // specify the last actor the message should be sent back to.
+  def perform(source: ActorRef, action: String, data: Pair[String, Any]*) {
+    actionSupervisor ! Perform(action, data.toMap, source)
   }
 
   //  def <-- (actor: ActorRef, message: Message): Option[Message] = {
