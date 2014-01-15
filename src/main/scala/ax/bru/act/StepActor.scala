@@ -15,6 +15,7 @@ class StepActor extends Actions {
 
   var awaitRefs: List[ActorRef] = null
 
+  // TODO timeout for messages in cache
   var receivedSoFar: Map[String, List[Message]] = Map()
 
   def receive: Actor.Receive = LoggingReceive {
