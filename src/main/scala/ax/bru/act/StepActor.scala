@@ -46,10 +46,10 @@ class StepActor extends Actions {
         if (awaitRefs != null) {
           val messagesReceivedSoFar = receivedSoFar.get(message.dataId)
           if (messagesReceivedSoFar.isDefined && messagesReceivedSoFar.get.size == awaitRefs.size) {
-            //TODO if serialised over network need to collate results from multiple actors before sending
+            //if serialised over network need to collate results from multiple actors before sending
             for (storedMessage <- messagesReceivedSoFar.get) {
               for (entry <- storedMessage.getAll){
-                message.set(entry._1, entry._2) // todo check this (also means incomplete history on message)
+                message.set(entry._1, entry._2)
               }
             }
             nextStep ! message.withRecord(self)
