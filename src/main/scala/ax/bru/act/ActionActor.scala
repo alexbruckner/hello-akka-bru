@@ -29,14 +29,13 @@ class ActionActor extends Actor with Logging {
       linkLastToThis(nextStep)
     case AddFunction(function) => this.function = function
     case message: Message =>
-      val data = message.getAll
       if (steps.size > 0) {
         // todo parallel case
-        steps(0) ! message
+        steps(0) ! message.withRecord(self)
       } else if (function != null) {
         function(message)
         if (nextStep != null) {
-          nextStep ! message
+          nextStep ! message.withRecord(self)
         }
       }
     case msg => log.debug(s"$msg"); throw new Error(s"invalid message received: $msg")

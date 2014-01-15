@@ -15,7 +15,13 @@ object ExampleAction {
   action.addStep("1-1").setExecutable((message) => {println("exec 1-1"); message.set("1", System.nanoTime())})
   action.addStep("1-2").setExecutable((message) => {println("exec 1-2"); message.set("2", System.nanoTime())})
   private val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true)
-  action.addStep("1-4").setExecutable((message) => {message.set("8", System.nanoTime()); println(s"exec 1-4\n${SortedMap(message.getAll.toSeq:_*)}")})
+  action.addStep("1-4").setExecutable((message) => {
+    message.set("8", System.nanoTime());
+    println(s"exec 1-4")
+    println(s"message id: ${message.dataId}")
+    println(s"message history: ${message.history}")
+    println(s"${SortedMap(message.getAll.toSeq:_*)}")
+  })
 
   //Action 2 (1-3)
   private val action3 = action2.addStep("2-1").setAction("Action 3 (2-1)")

@@ -25,9 +25,9 @@ class StepActor extends Actions {
       if (action != null) action ! Link(nextStep)
     case message: Message =>
       if (action != null) {
-        action ! message
+        action ! message.withRecord(self)
       } else if (nextStep != null) {
-        nextStep ! message
+        nextStep ! message.withRecord(self)
       }
 
     case _ => throw new Error("invalid message received")
