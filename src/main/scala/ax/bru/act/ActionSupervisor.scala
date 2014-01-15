@@ -5,7 +5,7 @@ import akka.event.LoggingReceive
 import ax.bru.act.cases._
 
 /**
- * Created by alexbruckner on 14/01/2014.
+ * Created by alexbruckner on 14/01/2014
  */
 class ActionSupervisor extends Actions {
 
