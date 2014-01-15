@@ -2,11 +2,11 @@ package ax.bru.act
 
 import akka.actor.{Props, ActorRef, Actor}
 import org.eintr.loglady.Logging
-import ax.bru.defs.{Action}
+import ax.bru.defs.Action
 import ax.bru.act.cases._
 
 /**
- * Created by alexbruckner on 14/01/2014.
+ * Created by alexbruckner on 14/01/2014
  */
 trait Actions extends Actor with Logging {
 
@@ -21,6 +21,10 @@ trait Actions extends Actor with Logging {
     log.debug(s"creating actor for $action")
     val actionActor = context.actorOf(Props[ActionActor], action.id)
 
+    if (action.parallel) {
+      actionActor ! SetParallel(true)
+    }
+
     if (action.hasSteps) {
       //TODO check whether already exists in context (testcase with reusing action as part of another)
       actionActor ! AddSteps(action.steps)
@@ -33,4 +37,5 @@ trait Actions extends Actor with Logging {
   }
 
   def storeActor(name: String, actor: ActorRef)
+
 }

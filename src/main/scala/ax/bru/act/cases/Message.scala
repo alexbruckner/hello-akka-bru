@@ -34,3 +34,7 @@ case class AddSteps(steps: List[Step])
 case class AddFunction(function: (Data) => Unit)
 
 case class Link(actor: ActorRef)
+
+case class SetParallel(flag: Boolean)
+
+case class Multiple(steps: List[ActorRef])

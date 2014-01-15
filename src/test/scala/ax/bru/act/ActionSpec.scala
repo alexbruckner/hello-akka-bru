@@ -26,22 +26,21 @@ class ActionSpec extends Specification {
 
   "\n\nAction" should {
     "have 8 map entries" in {
-      action.getAll must have size 8
+      action.getAll should have size 8
     }
-    "return map entries with keys 1 to 8" in {
-      SortedMap(action.getAll.toSeq:_*).keys.toString == "Set(1, 2, 3, 4, 5, 6, 7, 8)"
+
+    "have map entries with keys 1 to 8" in {
+      SortedMap(action.getAll.toSeq: _*).keys.toString must beEqualTo ("Set(1, 2, 3, 4, 5, 6, 7, 8)")
     }
-    "return map entries with timestamp values in same order as keys" in {// single-threaded sequential step execution
-      var previous: String = "0"
-      var ok: Boolean = true
-      for (i <- 1 to 8) {
-        val next = action.get(s"$i").toString
-        if (next < previous) {
-          ok = false
-        }
-        previous = next
-      }
-      ok
+
+    "have map entries with timestamp values in order (1, 2, 3, 4, 5, 6, 7, 8)" in {
+
+      val map: Map[String, String] = for {
+        entry <- action.getAll
+      } yield (entry._1, entry._2.toString)
+
+      SortedMap(map.map(_.swap).toSeq: _*).values.toString must beEqualTo ("MapLike(1, 2, 3, 4, 5, 6, 7, 8)")
+
     }
   }
 

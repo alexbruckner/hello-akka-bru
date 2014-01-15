@@ -2,20 +2,14 @@ package ax.bru.act
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import org.eintr.loglady.Logging
-import ax.bru.defs.{Action}
-
-//import scala.concurrent.Await
-//import akka.pattern.ask
-import scala.concurrent.duration._
+import ax.bru.defs.Action
 import ax.bru.act.cases._
 
 
 /**
- * Created by alexbruckner on 14/01/2014.
+ * Created by alexbruckner on 14/01/2014
  */
 object ActionSystem extends Logging {
-
-  val timeout = 2 seconds
 
   private val system = ActorSystem("Actions")
 
@@ -33,11 +27,5 @@ object ActionSystem extends Logging {
   def perform(source: ActorRef, action: String, data: Pair[String, Any]*) {
     actionSupervisor ! Perform(action, data.toMap, source)
   }
-
-  //  def <-- (actor: ActorRef, message: Message): Option[Message] = {
-  //    implicit val timeout = Timeout(ActionSystem.timeout)
-  //    val future = actor ? message
-  //    Await.result(future, timeout.duration).asInstanceOf[Option[Message]]
-  //  }
 
 }

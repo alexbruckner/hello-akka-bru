@@ -22,28 +22,28 @@ class ActionActorSpec(_system: ActorSystem)
   }
 
   ActionSystem.addAction(ExampleAction.action)
+
+  Thread.sleep(2000)
+
   ActionSystem.perform(self, ExampleAction.action.name, ("0", 0))
   val received: Message = receiveOne(5 seconds).asInstanceOf[Message]
 
   it should "return message to sender with 9 map entries" in {
-    received.getAll.size == 9
+    received.getAll should have size 9
   }
 
   it should "return map entries with keys 0 to 8" in {
-    SortedMap(received.getAll.toSeq:_*).keys.toString == "Set(0, 1, 2, 3, 4, 5, 6, 7, 8)"
+    SortedMap(received.getAll.toSeq: _*).keys.toString should be ("Set(0, 1, 2, 3, 4, 5, 6, 7, 8)")
   }
 
-  it should "return map entries with timestamp values in same order as keys" in { // todo this will have to revisited once the 'parallel' case is implemented!
-    var previous: String = "0"
-    var ok: Boolean = true
-    for (i <- 0 to 8) {
-      val next = received.get(s"$i").toString
-      if (next < previous) {
-        ok = false
-      }
-      previous = next
-    }
-    ok
+  it should "return map entries with timestamp values in order (0, 1, 2, 7, 3, 4, 5, 6, 8)" in {
+
+    val map: Map[String, String] = for {
+      entry <- received.getAll
+    } yield (entry._1, entry._2.toString)
+
+    SortedMap(map.map(_.swap).toSeq: _*).values.toString should be ("MapLike(0, 1, 2, 7, 3, 4, 5, 6, 8)")
+
   }
 
 }
