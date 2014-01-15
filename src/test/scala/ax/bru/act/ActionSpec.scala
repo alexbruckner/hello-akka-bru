@@ -31,8 +31,8 @@ class ActionSpec extends Specification {
     "return map entries with keys 1 to 8" in {
       SortedMap(action.getAll.toSeq:_*).keys.toString == "Set(1, 2, 3, 4, 5, 6, 7, 8)"
     }
-    "return map entries with timestamp values in same order as keys" in { // todo this will have to revisited once the 'parallel' case is implemented!
-    var previous: String = "0"
+    "return map entries with timestamp values in same order as keys" in {// single-threaded sequential step execution
+      var previous: String = "0"
       var ok: Boolean = true
       for (i <- 1 to 8) {
         val next = action.get(s"$i").toString

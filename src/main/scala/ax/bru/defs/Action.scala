@@ -8,7 +8,7 @@ import java.util.{Map => JMap}
 import scala.collection.JavaConverters._
 
 /**
- * Created by alexbruckner on 14/01/2014.
+ * Created by alexbruckner on 14/01/2014
  */
 object Action {
   def apply(name: String): Action = {
@@ -65,7 +65,7 @@ class Action(val name: String,
   
   def hasSteps = steps.size > 0
 
-  // single-threaded sequential step execution TODO comment out to avoid confusion...?
+  // single-threaded sequential step execution
   def execute() {
     if (hasSteps) {
       for (step <- steps) {
