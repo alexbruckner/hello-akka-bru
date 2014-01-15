@@ -25,8 +25,8 @@ class ActionActorSpec(_system: ActorSystem)
   ActionSystem.perform(self, ExampleAction.action.name, ("0", 0))
   val received: Message = receiveOne(5 seconds).asInstanceOf[Message]
 
-  it should "return message to sender with 8 map entries" in {
-    received.getAll.size == 8
+  it should "return message to sender with 9 map entries" in {
+    received.getAll.size == 9
   }
 
   it should "return map entries with keys 0 to 8" in {

@@ -2,6 +2,7 @@ package ax.bru.act
 
 import org.specs2.mutable._
 import ax.bru.defs.Action
+import scala.collection.immutable.SortedMap
 
 class ActionSpec extends Specification {
 
@@ -23,10 +24,24 @@ class ActionSpec extends Specification {
   val symbol = mirror.classSymbol(clazz)
   println(symbol.annotations)
 
-  "\n\nAction " should {
-    "blah 11 elements" in {
-      //action.data must have size (11)
-      true
+  "\n\nAction" should {
+    "have 8 map entries" in {
+      action.getAll must have size 8
+    }
+    "return map entries with keys 1 to 8" in {
+      SortedMap(action.getAll.toSeq:_*).keys.toString == "Set(1, 2, 3, 4, 5, 6, 7, 8)"
+    }
+    "return map entries with timestamp values in same order as keys" in { // todo this will have to revisited once the 'parallel' case is implemented!
+    var previous: String = "0"
+      var ok: Boolean = true
+      for (i <- 1 to 8) {
+        val next = action.get(s"$i").toString
+        if (next < previous) {
+          ok = false
+        }
+        previous = next
+      }
+      ok
     }
   }
 
