@@ -1,6 +1,6 @@
 package ax.bru.act
 
-import ax.bru.defs.Action
+import ax.bru.defs.{Data, Executable, Action}
 import ax.bru.java.TestAnnotation
 import ax.bru.annot.Awesome
 import scala.collection.immutable.SortedMap
@@ -13,7 +13,13 @@ object ExampleAction {
   //Action 1
   val action: Action = Action("Action 1")
   action.addStep("1-1").setExecutable((message) => {println("exec 1-1"); message.set("1", System.nanoTime())})
-  action.addStep("1-2").setExecutable((message) => {println("exec 1-2"); message.set("2", System.nanoTime())})
+
+  // or instead of function can set an executable
+  def executable: Executable = new Executable {
+    def execute(data: Data): Unit = {println("exec 1-2"); data.set("2", System.nanoTime())}
+  }
+
+  action.addStep("1-2").setExecutable(executable)
   private val action2: Action = action.addStep("1-3").setAction("Action 2 (1-3)", parallel = true)
 
   // last step

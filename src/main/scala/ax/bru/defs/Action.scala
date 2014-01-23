@@ -14,6 +14,7 @@ object Action {
   def apply(name: String): Action = {
     new Action(name, false, null)(new ConcurrentHashMap())
   }
+  def create(name: String) = apply(name: String)
   def toHtml(action: Action): String = {
 
     val name = action.name

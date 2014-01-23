@@ -18,9 +18,16 @@ class Step(val name: String)(var data: JMap[String, Any]) extends Logging {
     action
   }
 
+  def setAction(name: String): Action = setAction(name, parallel = false) // if used by java
+
   def setExecutable(function: (Data) => Unit) {
     log.debug(s"setting executable function for step $this")
     action = new Action("executable", false, function)(data)
+  }
+
+  def setExecutable(executable: Executable) {
+    log.debug(s"setting executable function for step $this")
+    action = new Action("executable", false, executable.execute)(data)
   }
 
   def hasAction = this.action != null
@@ -35,3 +42,4 @@ class Step(val name: String)(var data: JMap[String, Any]) extends Logging {
   override def toString() = s"Step $name"
 
 }
+
