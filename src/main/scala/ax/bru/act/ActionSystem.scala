@@ -5,6 +5,10 @@ import org.eintr.loglady.Logging
 import ax.bru.defs.Action
 import ax.bru.act.cases._
 
+import scala.concurrent.Await
+import akka.pattern.ask
+import akka.util.Timeout
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by alexbruckner on 14/01/2014
@@ -27,5 +31,15 @@ object ActionSystem extends Logging {
   def perform(source: ActorRef, action: String, data: Pair[String, Any]*) {
     actionSupervisor ! Perform(action, data.toMap, source)
   }
+
+  def performAndWait(waitFor: Long, action: String,  data: Pair[String, Any]*): Message = performAndWait(waitFor, action, data.toMap)
+
+  def performAndWait(waitFor: Long, action: String, data: Map[String, Any] = Map()): Message = {
+    implicit val timeout = Timeout(waitFor, TimeUnit.SECONDS)
+    val future = actionSupervisor ? Perform(action, data)
+    Await.result(future, timeout.duration).asInstanceOf[Message]
+  }
+
+  def performAndWait(waitFor: Long, action: String): Message = performAndWait(waitFor, action, Map[String, Any]()) // java
 
 }

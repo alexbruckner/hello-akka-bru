@@ -13,7 +13,7 @@ public class ExampleJavaAction {
 
     private static Action create() {
 
-        Action action = Action.create("Action 1");
+        Action action = Action.create("Java Action 1");
 
         action.addStep("1-1").setExecutable(new Executable() {
             @Override
