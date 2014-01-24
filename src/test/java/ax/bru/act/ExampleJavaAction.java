@@ -9,11 +9,12 @@ import ax.bru.defs.Executable;
  */
 public class ExampleJavaAction {
 
-    public static final Action action = create();
+    public static final Action action = create("Java Action 1");
+    public static final Action configAction = create("Java Config Action!!!");
 
-    private static Action create() {
+    private static Action create(String name) {
 
-        Action action = Action.create("Java Action 1");
+        Action action = Action.create(name);
 
         action.addStep("1-1").setExecutable(new Executable() {
             @Override

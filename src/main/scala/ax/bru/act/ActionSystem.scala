@@ -2,15 +2,13 @@ package ax.bru.act
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import org.eintr.loglady.Logging
-import ax.bru.defs.{Data, Action}
+import ax.bru.defs.Action
 import ax.bru.act.cases._
 
 import scala.concurrent.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import java.util.concurrent.TimeUnit
-import java.util
-import java.util.Map.Entry
 
 
 
@@ -46,6 +44,14 @@ object ActionSystem extends Logging {
   }
 
   def performAndWait(waitFor: Long, action: String): Result = performAndWait(waitFor, action, Map[String, Any]()) // java
+
+  def load(pkg: String) = {
+
+
+
+
+
+  }
 
 }
 

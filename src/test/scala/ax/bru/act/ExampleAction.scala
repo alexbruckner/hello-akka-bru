@@ -45,6 +45,5 @@ object ExampleAction {
   action4.addStep("4-2").setExecutable((message) => {println("exec 4-2"); Thread.sleep(100); message.set("6", System.nanoTime())})
 }
 
-@TestAnnotation("woohoo!") // java version
 @Awesome("we are awesome!") // scala version
 class ExampleAction
