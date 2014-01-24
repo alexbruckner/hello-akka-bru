@@ -6,7 +6,7 @@ import ax.bru.annot.Awesome
 import scala.collection.immutable.SortedMap
 
 /**
- * Created by alexbruckner on 13/01/2014.
+ * Created by alexbruckner on 13/01/2014
  */
 
 object ExampleAction {
@@ -42,7 +42,7 @@ object ExampleAction {
 
   //Action 4 (3-3)
   action4.addStep("4-1").setExecutable((message) => {println("exec 4-1"); message.set("5", System.nanoTime())})
-  action4.addStep("4-2").setExecutable((message) => {println("exec 4-2"); message.set("6", System.nanoTime())})
+  action4.addStep("4-2").setExecutable((message) => {println("exec 4-2"); Thread.sleep(100); message.set("6", System.nanoTime())})
 }
 
 @TestAnnotation("woohoo!") // java version

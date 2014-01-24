@@ -86,6 +86,11 @@ public class ExampleJavaAction {
             @Override
             public void execute(Data data) {
                 System.out.println("exec 4-2");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 data.set("6", System.nanoTime());
             }
         });
