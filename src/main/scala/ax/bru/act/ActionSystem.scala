@@ -11,7 +11,6 @@ import akka.util.Timeout
 import java.util.concurrent.TimeUnit
 
 
-
 /**
  * Created by alexbruckner on 14/01/2014
  */
@@ -44,14 +43,6 @@ object ActionSystem extends Logging {
   }
 
   def performAndWait(waitFor: Long, action: String): Result = performAndWait(waitFor, action, Map[String, Any]()) // java
-
-  def load(pkg: String) = {
-
-
-
-
-
-  }
 
 }
 

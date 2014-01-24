@@ -13,7 +13,7 @@ public class Config {
 
     @ActionDef
     public Action exampleAction() {
-        return ExampleJavaAction.configAction; //TODO auto loading or relection in init method when called., + write test case that does that.
+        return ExampleJavaAction.configAction;
     }
 
 }
