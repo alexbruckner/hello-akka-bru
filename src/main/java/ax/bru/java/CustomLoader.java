@@ -4,10 +4,41 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
 public class CustomLoader {
+
+
+    public static List<ax.bru.defs.Action> loadConfig(final String packageName) {
+        List<ax.bru.defs.Action> actions = new ArrayList<>();
+        try {
+            for (Class<?> c : getClasses(packageName)) {
+                Action action = c.getAnnotation(Action.class);
+                if (action != null && action.main()) {
+                    actions.add(build(c));
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace(); //TODO logging
+        }
+        return actions;
+    }
+
+    private static ax.bru.defs.Action build(Class<?> c) {
+        Action action = c.getAnnotation(Action.class);
+        String actionName = action.name();
+        Class<?>[] steps = action.steps();
+        ax.bru.defs.Action actionDefinition = ax.bru.defs.Action.create(actionName);
+        addStepsToActionDefinition(actionDefinition, steps);
+        return actionDefinition;
+    }
+
+    private static void addStepsToActionDefinition(ax.bru.defs.Action actionDefinition, Class<?>[] steps) {
+        System.out.println("!!!!!!!!!!!!!: " + actionDefinition + "---" + Arrays.toString(steps));
+    }
+
 
     /**
      * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
@@ -17,7 +48,7 @@ public class CustomLoader {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public static Class<?>[] getClasses(String packageName)
+    private static Class<?>[] getClasses(String packageName)
             throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         assert classLoader != null;

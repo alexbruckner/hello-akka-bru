@@ -36,13 +36,6 @@ public class ActionTest {
 
         Assert.assertEquals("[1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
 
-        try {
-            System.out.println("classes!!!!!: " + CustomLoader.getClasses("ax.bru.act.config"));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 

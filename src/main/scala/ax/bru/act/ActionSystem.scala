@@ -9,6 +9,8 @@ import scala.concurrent.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import java.util.concurrent.TimeUnit
+import ax.bru.java.CustomLoader
+import scala.collection.mutable
 
 
 /**
@@ -33,7 +35,7 @@ object ActionSystem extends Logging {
     actionSupervisor ! Perform(action, data.toMap, source)
   }
 
-  def performAndWait(waitFor: Long, action: String,  data: Pair[String, Any]*): Result = performAndWait(waitFor, action, data.toMap)
+  def performAndWait(waitFor: Long, action: String, data: Pair[String, Any]*): Result = performAndWait(waitFor, action, data.toMap)
 
   def performAndWait(waitFor: Long, action: String, data: Map[String, Any] = Map()): Result = {
     implicit val timeout = Timeout(waitFor, TimeUnit.SECONDS)
@@ -43,6 +45,17 @@ object ActionSystem extends Logging {
   }
 
   def performAndWait(waitFor: Long, action: String): Result = performAndWait(waitFor, action, Map[String, Any]()) // java
+
+
+  // TODO logging!!!
+  val configPackage = System.getProperty("ax.bru.config")
+  if (configPackage != null && configPackage.length > 0) {
+    import scala.collection.JavaConverters._
+    val actions: mutable.Buffer[Action] = CustomLoader.loadConfig(configPackage).asScala
+    for (action <- actions) {
+      addAction(action)
+    }
+  }
 
 }
 
