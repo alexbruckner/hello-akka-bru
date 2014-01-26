@@ -1,10 +1,11 @@
 package ax.bru.java;
 
+import ax.bru.defs.Executable;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class CustomLoader {
         return actions;
     }
 
-    private static ax.bru.defs.Action build(Class<?> c) {
+    private static ax.bru.defs.Action build(Class<?> c) throws InstantiationException, IllegalAccessException {
         Action action = c.getAnnotation(Action.class);
         String actionName = action.name();
         Class<?>[] steps = action.steps();
@@ -35,8 +36,17 @@ public class CustomLoader {
         return actionDefinition;
     }
 
-    private static void addStepsToActionDefinition(ax.bru.defs.Action actionDefinition, Class<?>[] steps) {
-        System.out.println("!!!!!!!!!!!!!: " + actionDefinition + "---" + Arrays.toString(steps));
+    private static void addStepsToActionDefinition(ax.bru.defs.Action actionDefinition, Class<?>[] steps) throws IllegalAccessException, InstantiationException {
+        for (Class<?> step : steps) {
+            Action action = step.getAnnotation(Action.class);
+            if (action != null) {
+                ax.bru.defs.Action actionDefinition2 = actionDefinition.addStep(action.name()).setAction(action.name(), action.parallel());
+                addStepsToActionDefinition(actionDefinition2, action.steps());
+            } else {
+                Step stepAnnot = step.getAnnotation(Step.class);
+                actionDefinition.addStep(stepAnnot.name()).setExecutable((Executable)step.newInstance());
+            }
+        }
     }
 
 

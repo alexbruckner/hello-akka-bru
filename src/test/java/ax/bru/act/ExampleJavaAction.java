@@ -60,6 +60,11 @@ public class ExampleJavaAction {
             @Override
             public void execute(Data data) {
                 System.out.println("exec 3-1");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 data.set("3", System.nanoTime());
             }
         });

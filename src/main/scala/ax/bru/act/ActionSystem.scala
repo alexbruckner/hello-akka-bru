@@ -53,6 +53,7 @@ object ActionSystem extends Logging {
     import scala.collection.JavaConverters._
     val actions: mutable.Buffer[Action] = CustomLoader.loadConfig(configPackage).asScala
     for (action <- actions) {
+      println("Adding action: " + action.name)
       addAction(action)
     }
   }
