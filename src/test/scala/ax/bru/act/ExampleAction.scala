@@ -1,7 +1,6 @@
 package ax.bru.act
 
 import ax.bru.defs.{Data, Executable, Action}
-import ax.bru.java.TestAnnotation
 import ax.bru.annot.Awesome
 import scala.collection.immutable.SortedMap
 

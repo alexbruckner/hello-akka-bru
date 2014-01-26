@@ -1,9 +1,11 @@
 package ax.bru.act;
 
 import ax.bru.defs.Action;
+import ax.bru.java.CustomLoader;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,6 +35,14 @@ public class ActionTest {
         }
 
         Assert.assertEquals("[1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
+
+        try {
+            System.out.println("classes!!!!!: " + CustomLoader.getClasses("ax.bru.act.config"));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
