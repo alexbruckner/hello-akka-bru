@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -44,7 +45,10 @@ public class ActionTest {
     public void testConfigAction() {
 
 
-        Result result = ActionSystem.performAndWait(5, "Java Config Action 1");
+        Map<String, Object> init = new HashMap<>();
+        init.put("0", 0L);
+
+        Result result = ActionSystem.performAndWait(5, "Java Config Action 1", init);
 
         Assert.assertNotNull(result);
 
@@ -55,7 +59,7 @@ public class ActionTest {
             timeSorted.put(entry.getValue(), entry.getKey());
         }
 
-        Assert.assertEquals("[1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
+        Assert.assertEquals("[0, 1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
 
 
     }

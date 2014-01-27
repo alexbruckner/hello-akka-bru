@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 import ax.bru.java.CustomLoader
 import scala.collection.mutable
 
+import scala.collection.JavaConverters._
 
 /**
  * Created by alexbruckner on 14/01/2014
@@ -44,13 +45,14 @@ object ActionSystem extends Logging {
     new Result(message)
   }
 
-  def performAndWait(waitFor: Long, action: String): Result = performAndWait(waitFor, action, Map[String, Any]()) // java
+  def performAndWait(waitFor: Long, action: String ): Result = performAndWait(waitFor, action, Map[String, Any]()) // java
+  def performAndWait(waitFor: Long, action: String, data: java.util.Map[String, Any] ): Result = performAndWait(waitFor, action, data.asScala.toMap) // java
 
 
   // TODO logging!!!
   val configPackage = System.getProperty("ax.bru.config")
   if (configPackage != null && configPackage.length > 0) {
-    import scala.collection.JavaConverters._
+
     val actions: mutable.Buffer[Action] = CustomLoader.loadConfig(configPackage).asScala
     for (action <- actions) {
       println("Adding action: " + action.name)
