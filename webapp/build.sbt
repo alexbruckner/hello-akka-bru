@@ -1,4 +1,6 @@
-name := """hello-play"""
+name := """AxBru-webapp"""
+
+organization := "ax.bru.webapp"
 
 version := "1.0-SNAPSHOT"
 
