@@ -1,6 +1,8 @@
 name := """AxBru"""
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
+
+organization := "ax.bru"
 
 scalaVersion := "2.10.2"
 
