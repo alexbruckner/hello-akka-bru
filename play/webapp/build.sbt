@@ -1,4 +1,4 @@
-name := "webapp"
+name := "AxBru-webapp"
 
 version := "1.0-SNAPSHOT"
 
