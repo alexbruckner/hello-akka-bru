@@ -1,4 +1,4 @@
-name := """hello-akka"""
+name := """AxBru"""
 
 version := "1.0"
 
