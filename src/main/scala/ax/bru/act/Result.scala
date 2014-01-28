@@ -10,6 +10,7 @@ import java.util.Map.Entry
 class Result(private val data: Data) extends java.lang.Iterable[java.util.Map.Entry[String, Any]] {
   def keys = data.getAll.keys
   def get(key: String) = data.get(key)
+  def toMap = data.getAll
 
   import collection.JavaConversions._
   def iterator(): util.Iterator[Entry[String, Any]] = mapAsJavaMap(data.getAll).entrySet().iterator
