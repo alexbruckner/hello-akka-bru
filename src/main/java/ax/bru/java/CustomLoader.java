@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CustomLoader {
 
-    public static List<ax.bru.defs.Action> loadConfig(final String packageName) {
+    public static List<ax.bru.defs.Action> loadConfig() {
         List<ax.bru.defs.Action> actions = new ArrayList<>();
         try {
             for (Class<?> c : Classes.listAnnotatedClasses(Action.class)) {

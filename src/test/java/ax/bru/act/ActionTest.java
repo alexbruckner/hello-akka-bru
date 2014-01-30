@@ -1,11 +1,9 @@
 package ax.bru.act;
 
 import ax.bru.defs.Action;
-import ax.bru.java.CustomLoader;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,9 +39,7 @@ public class ActionTest {
     }
 
     @Test
-    // run with -Dax.bru.config=ax.bru.act.config
     public void testConfigAction() {
-
 
         Map<String, Object> init = new HashMap<>();
         init.put("0", 0L);
@@ -60,7 +56,6 @@ public class ActionTest {
         }
 
         Assert.assertEquals("[0, 1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
-
 
     }
 
