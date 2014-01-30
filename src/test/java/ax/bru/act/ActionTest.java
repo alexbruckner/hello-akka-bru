@@ -41,6 +41,8 @@ public class ActionTest {
     @Test
     public void testConfigAction() {
 
+        ActionSystem.start();
+
         Map<String, Object> init = new HashMap<>();
         init.put("0", 0L);
 

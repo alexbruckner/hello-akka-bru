@@ -35,29 +35,38 @@ public class Classes {
         return methods;
     }
 
-    public static Set<Class> listAnnotatedClasses(Class<? extends Annotation> annotation) {
-        Set<Class> classes = new HashSet<Class>();
-        try {
-            Enumeration<URL> e = ClassLoader.getSystemClassLoader().getResources("");
-            while (e.hasMoreElements()) {
-                URL url = e.nextElement();
-                for (String child : Classes.getChildren(url)) {
-                    if (child.endsWith(".class")) {
-                        String className = child.substring(0, child.length() - 6).replace("/", ".");
-                        Class<?> clazz = Class.forName(className);
-
-                        if (clazz.getAnnotation(annotation) != null) {
-                            classes.add(Class.forName(clazz.getName()));
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public static Set<Class> listAnnotatedClasses(Class<? extends Annotation> annotation, ClassLoader... additionalClassLoaders) {
+        Set<Class> classes = listAnnotatedClasses(annotation, ClassLoader.getSystemClassLoader());
+        for (ClassLoader classLoader : additionalClassLoaders) {
+            classes.addAll(listAnnotatedClasses(annotation, classLoader));
         }
         return classes;
     }
 
+    public static Set<Class> listAnnotatedClasses(Class<? extends Annotation> annotation, ClassLoader classLoader) {
+        Set<Class> classes = new HashSet<>();
+        if (classLoader != null) {
+            try {
+                Enumeration<URL> e = classLoader.getResources("");
+                while (e.hasMoreElements()) {
+                    URL url = e.nextElement();
+                    for (String child : Classes.getChildren(url)) {
+                        if (child.endsWith(".class")) {
+                            String className = child.substring(0, child.length() - 6).replace("/", ".");
+                            Class<?> clazz = classLoader.loadClass(className);
+
+                            if (clazz.getAnnotation(annotation) != null) {
+                                classes.add(clazz);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return classes;
+    }
 
     /**
      * Takes a given url and creates a list which contains

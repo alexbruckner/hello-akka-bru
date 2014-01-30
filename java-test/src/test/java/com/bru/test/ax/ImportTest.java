@@ -16,7 +16,7 @@ public class ImportTest {
     @Test
     public void testConfigAction() {
 
-        System.setProperty("ax.bru.config", "com.bru.test.ax.config");
+        ActionSystem.start();
 
         Result result = ActionSystem.performAndWait(5, "Java Config Action 1");
 

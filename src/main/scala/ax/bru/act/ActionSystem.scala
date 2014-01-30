@@ -50,13 +50,17 @@ object ActionSystem extends Logging {
   // java
   def performAndWait(waitFor: Long, action: String, data: java.util.Map[String, Any]): Result = performAndWait(waitFor, action, data.asScala.toMap) // java
 
-
   // TODO logging!!!
-  println("Loading config...........")
-  val actions: List[Action] = CustomLoader.loadConfig().asScala.toList
-  for (action <- actions) {
-    println("Adding action: " + action.name)
-    addAction(action)
+  def start() {
+    start(null)
+  }
+  def start(additionalClassLoader: ClassLoader) {
+    println("Loading config...........")
+    val actions: List[Action] = CustomLoader.loadConfigWith(additionalClassLoader).asScala.toList
+    for (action <- actions) {
+      println("Adding action: " + action.name)
+      addAction(action)
+    }
   }
 
 }
