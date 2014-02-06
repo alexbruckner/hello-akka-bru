@@ -1,7 +1,5 @@
 package ax.bru.java;
 
-import ax.bru.defs.Executable;
-
 import java.lang.annotation.*;
 
 /**
@@ -12,7 +10,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Action {
     String name();
-    boolean main() default false;
-    Class<?>[] steps();
     boolean parallel() default false;
 }

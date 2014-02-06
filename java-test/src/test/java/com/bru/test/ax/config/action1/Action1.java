@@ -1,13 +1,13 @@
-package conf.java.action1;
+package com.bru.test.ax.config.action1;
 
 import ax.bru.defs.Executable;
 import ax.bru.java.Action;
 import ax.bru.java.Step;
 import ax.bru.java.SubAction;
-import conf.java.action1.steps.Step1;
-import conf.java.action1.steps.Step2;
-import conf.java.action1.steps.Step3;
-import conf.java.action1.steps.Step4;
+import com.bru.test.ax.config.action1.steps.Step1;
+import com.bru.test.ax.config.action1.steps.Step2;
+import com.bru.test.ax.config.action1.steps.Step3;
+import com.bru.test.ax.config.action1.steps.Step4;
 
 
 /**
