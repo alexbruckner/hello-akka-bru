@@ -50,7 +50,7 @@ class ActionActorSpec(_system: ActorSystem)
   ActionSystem.perform(self, ExampleAction.action.name, (Reserved.INFO, true))
   val received2: Message = receiveOne(5 seconds).asInstanceOf[Message]
   it should "return message to sender with 9 map entries again" in {
-    println(s"\nReceived 2: \n${received2.getAll}")
+    println(s"\nReceived 2: \n${SortedMap(received2.getAll.toSeq: _*)}")
     true
   }
 

@@ -77,6 +77,8 @@ class ActionActor extends Actor with Logging with ActorInfo {
   def executeFunction(message: Message): Unit = {
     if (!message.isInfo) {
       function(message)
+    } else {
+      message.set(self.path.toString.replaceFirst("akka://", "function://"), function.getClass.toString)
     }
   }
 
