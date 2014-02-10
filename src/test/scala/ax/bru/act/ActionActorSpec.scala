@@ -1,5 +1,5 @@
 import ax.bru.act.cases.Message
-import ax.bru.act.{ExampleAction, ActionSystem}
+import ax.bru.act.{Reserved, ExampleAction, ActionSystem}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import akka.actor.ActorSystem
@@ -45,5 +45,15 @@ class ActionActorSpec(_system: ActorSystem)
     SortedMap(map.map(_.swap).toSeq: _*).values.toString should be ("MapLike(0, 1, 2, 7, 3, 4, 5, 6, 8)")
 
   }
+
+  // info only request, should return paths and connections between actors
+  ActionSystem.perform(self, ExampleAction.action.name, (Reserved.INFO, true))
+  val received2: Message = receiveOne(5 seconds).asInstanceOf[Message]
+  it should "return message to sender with 9 map entries again" in {
+    println(s"\nReceived 2: \n${received2.getAll}")
+    true
+  }
+
+
 
 }

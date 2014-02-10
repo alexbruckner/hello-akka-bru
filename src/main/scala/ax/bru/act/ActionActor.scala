@@ -3,13 +3,14 @@ package ax.bru.act
 import akka.actor.{Props, ActorRef, Actor}
 import akka.event.LoggingReceive
 import org.eintr.loglady.Logging
-import ax.bru.defs.{Step, Data}
+import ax.bru.defs.{Data, Step}
 import ax.bru.act.cases._
+import ax.bru.act.info.ActorInfo
 
 /**
  * Created by alexbruckner on 14/01/2014
  */
-class ActionActor extends Actor with Logging {
+class ActionActor extends Actor with Logging with ActorInfo {
   var steps: List[ActorRef] = List()
   var function: (Data) => Unit = null
   var nextStep: ActorRef = null
@@ -52,26 +53,41 @@ class ActionActor extends Actor with Logging {
 
     case message: Message =>
       if (steps.size > 0) {
-        if (parallel) {
-          for (step <- steps) {
-            step ! message.withRecord(self)
-          }
-        } else {
-          steps(0) ! message.withRecord(self)
-        }
+        executeSteps(message)
       } else if (function != null) {
-        function(message)
-        if (nextStep != null) {
-          nextStep ! message.withRecord(self)
-        } else {
-          // return to sender
-          if (message.sender != null) {
-            message.sender ! message.withRecord(self)
-          }
-        }
+        executeFunction(message)
+        sendOn(message)
       }
 
     case msg => log.debug(s"$msg"); throw new Error(s"invalid message received: $msg")
+  }
+
+  def executeSteps(message: Message): Unit = {
+    if (parallel) {
+      checkInfo(message, self, steps)
+      for (step <- steps) {
+        step ! message.withRecord(self)
+      }
+    } else {
+      checkInfo(message, self, List(steps(0)))
+      steps(0) ! message.withRecord(self)
+    }
+  }
+
+  def executeFunction(message: Message): Unit = {
+    if (!message.isInfo) {
+      function(message)
+    }
+  }
+
+  def sendOn(message: Message): Unit = {
+    if (nextStep != null) {
+      checkInfo(message, self, List(nextStep))
+      nextStep ! message.withRecord(self)
+    } else if (message.sender != null) {
+      // return to sender
+      message.sender ! message.withRecord(self)
+    }
   }
 
   def createActor(step: Step): ActorRef = {

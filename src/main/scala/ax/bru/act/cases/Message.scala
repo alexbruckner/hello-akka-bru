@@ -2,6 +2,7 @@ package ax.bru.act.cases
 
 import ax.bru.defs.{Step, Action, Data}
 import akka.actor.ActorRef
+import ax.bru.act.Reserved
 
 
 /**
@@ -22,6 +23,13 @@ case class Message(var map: Map[String, Any]) extends Data {
   def withSender(sender: ActorRef): Message = {
     this.sender = sender
     this
+  }
+  def isInfo: Boolean = {
+    val isInfo = map.get(Reserved.INFO)
+    if (isInfo.isDefined) {
+      return isInfo.get.asInstanceOf[Boolean]
+    }
+    false
   }
 }
 

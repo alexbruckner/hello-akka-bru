@@ -3,11 +3,12 @@ package ax.bru.act
 import akka.actor.{ActorRef, Actor}
 import akka.event.LoggingReceive
 import ax.bru.act.cases._
+import ax.bru.act.info.ActorInfo
 
 /**
  * Created by alexbruckner on 14/01/2014
  */
-class ActionSupervisor extends Actions {
+class ActionSupervisor extends Actions with ActorInfo {
 
   // contains the system wide defined 'top level' action names and the actor ref to the first actor for each action
   var actions: Map[String, ActorRef] = Map()
@@ -24,7 +25,9 @@ class ActionSupervisor extends Actions {
         if (senderToUse == null) {
           senderToUse = sender
         }
-        actor.get ! Message(map).withRecord(self).withSender(senderToUse)
+        val message = Message(map).withRecord(self).withSender(senderToUse)
+        checkInfo(message, self, List(actor.get))
+        actor.get ! message
       }
 
     case message =>

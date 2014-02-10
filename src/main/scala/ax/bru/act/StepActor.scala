@@ -3,11 +3,12 @@ package ax.bru.act
 import akka.actor.{ActorRef, Actor}
 import akka.event.LoggingReceive
 import ax.bru.act.cases._
+import ax.bru.act.info.ActorInfo
 
 /**
  * Created by alexbruckner on 14/01/2014
  */
-class StepActor extends Actions {
+class StepActor extends Actions with ActorInfo {
 
   var action: ActorRef = null
 
@@ -41,6 +42,7 @@ class StepActor extends Actions {
       }
 
       if (action != null) {
+        checkInfo(message, self, List(action))
         action ! message.withRecord(self)
       } else if (nextStep != null) {
         if (awaitRefs != null) {
@@ -52,10 +54,12 @@ class StepActor extends Actions {
                 message.set(entry._1, entry._2)
               }
             }
+            checkInfo(message, self, List(nextStep))
             nextStep ! message.withRecord(self)
             receivedSoFar = receivedSoFar - message.dataId
           }
         } else {
+          checkInfo(message, self, List(nextStep))
           nextStep ! message.withRecord(self)
         }
       }
