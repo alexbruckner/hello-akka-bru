@@ -49,8 +49,21 @@ class ActionActorSpec(_system: ActorSystem)
   // info only request, should return paths and connections between actors
   ActionSystem.perform(self, ExampleAction.action.name, (Reserved.INFO, true))
   val received2: Message = receiveOne(5 seconds).asInstanceOf[Message]
+
+  def prettyString(map: Map[String, Any]): String = {
+
+    val filtered: Map[String, String] = for {
+      (key, value) <- map
+      if key.startsWith("akka://")
+    } yield (key, value.toString)
+
+    val sorted: Map[String, String] = SortedMap(filtered.toSeq: _*)
+
+    sorted.toString()
+  }
+
   it should "return message to sender with 9 map entries again" in {
-    println(s"\nReceived 2: \n${SortedMap(received2.getAll.toSeq: _*)}")
+    println(s"\nReceived 2: \n${prettyString(received2.getAll)}")
     true
   }
 
