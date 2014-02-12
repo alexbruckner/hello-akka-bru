@@ -37,23 +37,47 @@ class LinkedTree(val name: String) extends Iterable[Node] {
       var arrowLine = ""
       var lastColumn = 0
       var first = true
+      var arrowLineParents = List[String]()
       for (node <- map.get(key).get) {
+        arrowLineParents = arrowLineParents ::: List(node.parent.name)
         if (first) {
           line += pad("", cellSize, " ") * node.column
           arrowLine += pad("", cellSize, " ") * node.column
         } else {
           val padCount = node.column - lastColumn - 1
           line += pad("", cellSize, " ") * padCount
-          arrowLine += pad("", cellSize, " ") * padCount
+          arrowLine += pad("", cellSize, "-") * padCount
         }
         val name = s"${node.name}"
         line += s"${pad(name.substring(0, math.min(cellSize, name.size)), cellSize, " ")}"
-        arrowLine += s"${pad(""+0x25BC.toChar, cellSize, " ")}"
+        arrowLine += s"${pad("▼", cellSize, "-")}"
         lastColumn = node.column
         first = false
       }
       if (key == 0) arrowLine = ""
-      result += arrowLine + "\n" + line + "\n"
+
+      var modArrowLine = ""
+      var charpos = 0
+      var hits = -1
+      var write: Boolean = true
+      for (c <- arrowLine) {
+
+        if (c == '▼') {
+         hits += 1
+          if (hits < arrowLineParents.size - 1 && arrowLineParents(hits) != arrowLineParents(hits+1)) {
+            write = false
+          }
+          modArrowLine += c
+        }
+        else if (write && hits > -1 && hits < arrowLineParents.size - 1) {
+          modArrowLine += c
+        } else {
+          modArrowLine += " "
+        }
+        charpos += 1
+      }
+
+      result += modArrowLine + "\n" + line + "\n"
     }
     result
   }
@@ -106,10 +130,10 @@ object LinkedTree {
 /*
  * NODE CLASS
  */
-class Node(val name: String, var children: List[Node])(val depth: Int, var column: Int = 0) {
+class Node(val name: String, var children: List[Node], val parent: Node)(val depth: Int, var column: Int = 0) {
 
   def add(child: String): Node = {
-    val node = Node(child, depth + 1)
+    val node = Node(child, depth + 1, this)
     children = children ::: List(node)
     node
   }
@@ -129,5 +153,5 @@ class Node(val name: String, var children: List[Node])(val depth: Int, var colum
 }
 
 object Node {
-  def apply(name: String, depth: Int): Node = new Node(name, List())(depth)
+  def apply(name: String, depth: Int, parent: Node = new Node("undef", null, null)(0)): Node = new Node(name, List(), parent)(depth)
 }
