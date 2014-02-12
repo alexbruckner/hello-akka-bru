@@ -16,6 +16,8 @@ class LinkedTree(val name: String) extends Iterable[Node] {
   //max node name length in toString method
   val cellSize = 10
 
+  var downArrow = ""
+
   /* expect:
    *
    * root
@@ -50,7 +52,7 @@ class LinkedTree(val name: String) extends Iterable[Node] {
         }
         val name = s"${node.name}"
         line += s"${pad(name.substring(0, math.min(cellSize, name.size)), cellSize, " ")}"
-        arrowLine += s"${pad("▼", cellSize, "-")}"
+        arrowLine += s"${pad("|", cellSize, "-")}"
         lastColumn = node.column
         first = false
       }
@@ -62,7 +64,7 @@ class LinkedTree(val name: String) extends Iterable[Node] {
       var write: Boolean = true
       for (c <- arrowLine) {
 
-        if (c == '▼') {
+        if (c == '|') {
          hits += 1
           if (hits < arrowLineParents.size - 1 && arrowLineParents(hits) != arrowLineParents(hits+1)) {
             write = false
