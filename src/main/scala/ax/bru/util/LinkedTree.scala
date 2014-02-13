@@ -7,14 +7,11 @@ package ax.bru.util
  *
  * Created by alexbruckner on 12/02/2014
  */
-class LinkedTree(val name: String) extends Iterable[Node] {
+class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
   /*
    * ROOT NODE
    */
   val root = Node(name, 0)
-
-  //max node name length in toString method
-  val cellSize = 10
 
   var downArrow = ""
 
@@ -130,7 +127,7 @@ class LinkedTree(val name: String) extends Iterable[Node] {
 }
 
 object LinkedTree {
-  def apply(name: String): LinkedTree = new LinkedTree(name)
+  def apply(name: String, cellSize: Int = 10): LinkedTree = new LinkedTree(name, cellSize)
 }
 
 /*

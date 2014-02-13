@@ -1,5 +1,6 @@
 import ax.bru.act.cases.Message
 import ax.bru.act.{Reserved, ExampleAction, ActionSystem}
+import ax.bru.util.{LinkedTree, Node}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import akka.actor.ActorSystem
@@ -51,18 +52,14 @@ class ActionActorSpec(_system: ActorSystem)
   val received2: Message = receiveOne(5 seconds).asInstanceOf[Message]
 
 
-
-  def printNext(sorted: Map[String, List[String]], current: List[String]) {
-    var lastElemPos = 0
+  def printNext(sorted: Map[String, List[String]], current: List[String], node: Node) {
     for (elem <- current) {
-      print(elem.substring(elem.lastIndexOf("/") + 1)); print(s" ($lastElemPos)")
-    }
-    println
-    val checkNext = sorted.get(current(0))
-    if (checkNext.isDefined) {
-      println(0x25BC.toChar)
-      val next = checkNext.get
-      printNext(sorted, next)
+      val currentNode = node.add(elem.substring(elem.lastIndexOf("/") + 1))
+      val checkNext = sorted.get(elem)
+      if (checkNext.isDefined) {
+        val next = checkNext.get
+        printNext(sorted, next, currentNode)
+      }
     }
   }
 
@@ -77,7 +74,9 @@ class ActionActorSpec(_system: ActorSystem)
 
     println
     println("---------------------------------------")
-    printNext(sorted, List("akka://Actions/user/ActionSupervisor"))
+    val tree = LinkedTree("Action Tree", 30)
+    printNext(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
+    println(tree)
     println
     println("---------------------------------------")
 
