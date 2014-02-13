@@ -18,6 +18,10 @@ class LinkedTree(val name: String) extends Iterable[Node] {
 
   var downArrow = ""
 
+  def print() {
+    println(toString().replace("-", Console.GREEN + "-" + Console.RESET).replace("|", Console.GREEN + "|" + Console.RESET))
+  }
+
   /* expect:
    *
    * root

@@ -19,12 +19,11 @@ class LinkedTreeSpec extends Specification {
   child4.add("y")
   child4.add("z")
 
-  println(tree)
+  tree.print()
 
-
-  "\n\nAction" should {
-    "have 8 map entries" in {
-      true
+  "\nTree" + tree.toString() should {
+    "have a correct toString method" in {
+      tree.toString must beEqualTo ("\n   root   \n    |---------|---------------------------------------|     \n    1         2                                       3     \n              |-----------------------------|         |     \n              4                             5         6     \n              |---------|---------|                   |     \n              x         y         z                   7     \n")
     }
 
 
