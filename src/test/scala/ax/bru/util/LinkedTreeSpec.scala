@@ -4,7 +4,7 @@ import org.specs2.mutable._
 
 class LinkedTreeSpec extends Specification {
 
-  val tree = LinkedTree("root")
+  val tree = LinkedTree("root", 10)
 
   val child1 = tree.root.add("1")
   val child2 = tree.root.add("2")
