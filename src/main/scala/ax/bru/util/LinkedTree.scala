@@ -7,7 +7,7 @@ package ax.bru.util
  *
  * Created by alexbruckner on 12/02/2014
  */
-class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
+class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Node] {
   /*
    * ROOT NODE
    */
@@ -16,7 +16,15 @@ class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
   var downArrow = ""
 
   def print() {
-    println(toString().replace("-", Console.GREEN + "-" + Console.RESET).replace("|", Console.GREEN + "|" + Console.RESET))
+    println(toString().replace("-", Console.GREEN + "-" + Console.RESET).replace("|", Console.GREEN + "|" + Console.RESET).replace("<", Console.GREEN + "<" + Console.RESET))
+  }
+
+  var cellSize = wantedCellSize
+
+  def updateCellSize() {
+    if (wantedCellSize == 0) {
+      cellSize = root.flatten.map(node => node.name.length()).max
+    }
   }
 
   /* expect:
@@ -30,6 +38,7 @@ class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
    *             7
    */
   override def toString(): String = {
+    updateCellSize()
     var result: String = ""
     val map: ListMap[Int, Node] = ListMap()
     for (node <- this) {
@@ -66,8 +75,8 @@ class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
       for (c <- arrowLine) {
 
         if (c == '|') {
-         hits += 1
-          if (hits < arrowLineParents.size - 1 && arrowLineParents(hits) != arrowLineParents(hits+1)) {
+          hits += 1
+          if (hits < arrowLineParents.size - 1 && arrowLineParents(hits) != arrowLineParents(hits + 1)) {
             write = false
           }
           modArrowLine += c
@@ -124,16 +133,45 @@ class LinkedTree(val name: String, val cellSize: Int) extends Iterable[Node] {
     override def hasNext: Boolean = iterator.hasNext
   }
 
+  def removeDuplicates(): LinkedTree = {
+    updateCellSize()
+    var nodesNames: List[String] = List()
+    for (node <- this) {
+      if (nodesNames.contains(node.name)) {
+        node.children = List()
+        //        node.name = "|"
+        var nextNode = node
+        val check: Option[Node] = find(node.name)
+        node.name = "|"
+        if (check.isDefined) {
+          for (i <- 1 to check.get.depth - node.depth) {
+            nextNode = nextNode.add("|")
+          }
+          nextNode.name = " " + ("<" * (cellSize / 2)).substring(2) + "|" + " " * (cellSize / 2)
+        }
+      }
+      else nodesNames = nodesNames ::: List(node.name)
+    }
+    this
+  }
+
+  def find(name: String): Option[Node] = {
+    for (node <- this) {
+      if (node.name == name) return Option(node)
+    }
+    Option.empty
+  }
+
 }
 
 object LinkedTree {
-  def apply(name: String, cellSize: Int = 10): LinkedTree = new LinkedTree(name, cellSize)
+  def apply(name: String, cellSize: Int = 0): LinkedTree = new LinkedTree(name, cellSize)
 }
 
 /*
  * NODE CLASS
  */
-class Node(val name: String, var children: List[Node], val parent: Node)(val depth: Int, var column: Int = 0) {
+class Node(var name: String, var children: List[Node], val parent: Node)(val depth: Int, var column: Int = 0) {
 
   def add(child: String): Node = {
     val node = Node(child, depth + 1, this)

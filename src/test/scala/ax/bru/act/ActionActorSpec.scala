@@ -26,6 +26,8 @@ class ActionActorSpec(_system: ActorSystem)
 
   Thread.sleep(2000)
 
+  ActionSystem.printActorTree(ExampleAction.action.name)
+
   ActionSystem.perform(self, ExampleAction.action.name, ("0", 0))
   val received: Message = receiveOne(5 seconds).asInstanceOf[Message]
 
@@ -46,48 +48,5 @@ class ActionActorSpec(_system: ActorSystem)
     SortedMap(map.map(_.swap).toSeq: _*).values.toString should be("MapLike(0, 1, 2, 7, 3, 4, 5, 6, 8)")
 
   }
-
-  // info only request, should return paths and connections between actors
-  ActionSystem.perform(self, ExampleAction.action.name, (Reserved.INFO, true))
-  val received2: Message = receiveOne(5 seconds).asInstanceOf[Message]
-
-
-  def printNext(sorted: Map[String, List[String]], current: List[String], node: Node) {
-    for (elem <- current) {
-      val currentNode = node.add(elem.substring(elem.lastIndexOf("/") + 1))
-      val checkNext = sorted.get(elem)
-      if (checkNext.isDefined) {
-        val next = checkNext.get
-        printNext(sorted, next, currentNode)
-      }
-    }
-  }
-
-  def prettyString(map: Map[String, Any]): String = {
-
-    val filtered: Map[String, List[String]] = for {
-      (key, value) <- map
-      if key.startsWith("akka://")
-    } yield (key, value.asInstanceOf[List[String]])
-
-    val sorted: Map[String, List[String]] = SortedMap(filtered.toSeq: _*)
-
-    println
-    println("---------------------------------------")
-    val tree = LinkedTree("Action Tree", 30)
-    printNext(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
-    println(tree)
-    println
-    println("---------------------------------------")
-
-    sorted.toString()
-
-  }
-
-  it should "return message to sender with 9 map entries again" in {
-    println(s"\nReceived 2: \n${prettyString(received2.getAll)}")
-    true
-  }
-
 
 }

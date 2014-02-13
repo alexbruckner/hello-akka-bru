@@ -10,9 +10,10 @@ import akka.pattern.ask
 import akka.util.Timeout
 import java.util.concurrent.TimeUnit
 import ax.bru.java.CustomLoader
-import scala.collection.mutable
 
 import scala.collection.JavaConverters._
+import ax.bru.util.{LinkedTree, Node}
+import scala.collection.immutable.SortedMap
 
 /**
  * Created by alexbruckner on 14/01/2014
@@ -62,6 +63,54 @@ object ActionSystem extends Logging {
       addAction(action)
     }
   }
+
+  // introspection of defined action actors
+
+  // info only request, should return paths and connections between actors
+
+  def printActorTree(actionName: String) {
+    val received2: Map[String, Any] = performAndWait(5, actionName, (Reserved.INFO, true)).toMap
+
+    def printNext(sorted: Map[String, List[String]], current: List[String], node: Node) {
+      for (elem <- current) {
+        val currentNode = node.add(elem.replace("akka://Actions/user/ActionSupervisor/", ""))
+        val checkNext = sorted.get(elem)
+        if (checkNext.isDefined) {
+          val next = checkNext.get
+          printNext(sorted, next, currentNode)
+        }
+      }
+    }
+
+    def prettyString(map: Map[String, Any]): String = {
+
+      val filtered: Map[String, List[String]] = for {
+        (key, value) <- map
+        if key.startsWith("akka://")
+      } yield (key, value.asInstanceOf[List[String]])
+
+      val sorted: Map[String, List[String]] = SortedMap(filtered.toSeq: _*)
+
+      println
+      println("---------------------------------------")
+      val tree = LinkedTree(s"'' $actionName ''")
+      printNext(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
+      tree.removeDuplicates().print()
+      println
+      println("---------------------------------------")
+
+      sorted.toString()
+
+    }
+
+    println(s"${prettyString(received2)}")
+
+  }
+
+
+
+
+
 
 }
 
