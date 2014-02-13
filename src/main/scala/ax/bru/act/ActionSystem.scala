@@ -71,18 +71,18 @@ object ActionSystem extends Logging {
   def printActorTree(actionName: String) {
     val received2: Map[String, Any] = performAndWait(5, actionName, (Reserved.INFO, true)).toMap
 
-    def printNext(sorted: Map[String, List[String]], current: List[String], node: Node) {
+    def makeTree(sorted: Map[String, List[String]], current: List[String], node: Node) {
       for (elem <- current) {
         val currentNode = node.add(elem.replace("akka://Actions/user/ActionSupervisor/", ""))
         val checkNext = sorted.get(elem)
         if (checkNext.isDefined) {
           val next = checkNext.get
-          printNext(sorted, next, currentNode)
+          makeTree(sorted, next, currentNode)
         }
       }
     }
 
-    def prettyString(map: Map[String, Any]): String = {
+    def printTree(map: Map[String, Any]) {
 
       val filtered: Map[String, List[String]] = for {
         (key, value) <- map
@@ -94,16 +94,14 @@ object ActionSystem extends Logging {
       println
       println("---------------------------------------")
       val tree = LinkedTree(s"'' $actionName ''")
-      printNext(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
+      makeTree(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
       tree.removeDuplicates().print()
       println
       println("---------------------------------------")
 
-      sorted.toString()
-
     }
 
-    println(s"${prettyString(received2)}")
+    printTree(received2)
 
   }
 
