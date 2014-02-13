@@ -16,7 +16,11 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
   var downArrow = ""
 
   def print() {
-    println(toString().replace("-", Console.GREEN + "-" + Console.RESET).replace("|", Console.GREEN + "|" + Console.RESET).replace("<", Console.GREEN + "<" + Console.RESET))
+    println(toColorString())
+  }
+
+  def toColorString(): String = {
+    toString().replace("-", Console.GREEN + "-" + Console.RESET).replace("|", Console.GREEN + "|" + Console.RESET).replace("<", Console.GREEN + "<" + Console.RESET)
   }
 
   var cellSize = wantedCellSize
