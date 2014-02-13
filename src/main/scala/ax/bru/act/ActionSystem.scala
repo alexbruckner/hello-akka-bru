@@ -78,10 +78,14 @@ object ActionSystem extends Logging {
 
     def makeTree(sorted: Map[String, List[String]], current: List[String], node: Node) {
       for (elem <- current) {
-        val currentNode = node.add(elem.replace("akka://Actions/user/ActionSupervisor/", ""))
+        val lastIndex = elem.lastIndexOf("/") - 1
+        val beforeThatIndex = elem.substring(0,lastIndex).lastIndexOf("/") + 1
+        val currentNode = node.add(elem.substring(beforeThatIndex))
+
         if (elem.endsWith("executable")) {
-          currentNode.name = "executable" + received2("function://Actions/user/ActionSupervisor/" + currentNode.name).toString.substring(5)
+          currentNode.name = "executable" + received2(elem.replace("akka:", "function:")).toString.substring(5)
         }
+
         val checkNext = sorted.get(elem)
         if (checkNext.isDefined) {
           val next = checkNext.get
