@@ -35,6 +35,7 @@ public class ActionTest {
 
         Assert.assertEquals("[1, 2, 7, 3, 4, 5, 6, 8]", timeSorted.values().toString());
 
+        ActionSystem.printActorTree(action.name());
 
     }
 

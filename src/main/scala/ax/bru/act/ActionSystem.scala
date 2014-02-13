@@ -82,9 +82,9 @@ object ActionSystem extends Logging {
         val beforeThatIndex = elem.substring(0,lastIndex).lastIndexOf("/") + 1
         val currentNode = node.add(elem.substring(beforeThatIndex))
 
-        if (elem.endsWith("executable")) {
-          currentNode.name = "executable" + received2(elem.replace("akka:", "function:")).toString.substring(5)
-        }
+//        if (elem.endsWith("executable")) {
+//          currentNode.name += received2(elem.replace("akka:", "function:")).toString.substring(5)
+//        }
 
         val checkNext = sorted.get(elem)
         if (checkNext.isDefined) {
