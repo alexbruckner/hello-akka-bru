@@ -42,37 +42,32 @@ object Action {
 
   }
 
-  def toTree(action: Action): LinkedTree = {
-
-    val tree = LinkedTree(action.id)
-
-    toTree(tree.root, action)
-
-    def toTree(node: Node, action: Action) {
-
-      var current = node.add(action.name)
-
-      for (step <- action.steps) {
-
-        val fun = if (step.action.function != null) " (executable)" else ""
-
-        val stepNode = current.add(step.name + fun)
-
-        if (!action.parallel) current = stepNode
-
-        if (step.hasFurtherActionSteps) {
-          toTree(stepNode, step.action)
-        }
-
-      }
-
-
-
-    }
-
-    tree
-
-  }
+//TODO fix
+//  def toTree(action: Action): LinkedTree = {
+//
+//    val tree = LinkedTree(action.id)
+//
+//    toTree(tree.root, action)
+//
+//    def toTree(node: Node, action: Action) {
+//
+//      var current = node.add(action.name)
+//
+//      for (step <- action.steps) {
+//
+//        val fun = if (step.action.function != null) " (executable)" else ""
+//
+//        val stepNode = current.add(step.name + fun)
+//
+//        if (!action.parallel) current = stepNode
+//
+//        if (step.hasFurtherActionSteps) {
+//          toTree(stepNode, step.action)
+//        }
+//      }
+//    }
+//    tree
+//  }
 
   private def toHtml(step: Step): String = {
     val name = step.name
@@ -123,9 +118,9 @@ class Action(val name: String,
 
   override def toString() = s"Action $name"
 
-  def print() {
-    println(Action.toTree(this).toColorString().replace("executable", Console.RED + "executable" + Console.RESET))
-  }
+//  def print() {
+//    println(Action.toTree(this).toColorString().replace("executable", Console.RED + "executable" + Console.RESET))
+//  }
 
 }
 

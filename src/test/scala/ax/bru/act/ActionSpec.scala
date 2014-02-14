@@ -9,13 +9,9 @@ class ActionSpec extends Specification {
   //Action 1
   val action: Action = ExampleAction.action
 
-//  displayAction(action)
-//
-//  Thread.sleep(5000)
+  displayAction(action)
 
-
-  action.print()
-
+  Thread.sleep(5000)
 
   action.execute()
 
