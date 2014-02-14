@@ -42,33 +42,6 @@ object Action {
 
   }
 
-//TODO fix
-//  def toTree(action: Action): LinkedTree = {
-//
-//    val tree = LinkedTree(action.id)
-//
-//    toTree(tree.root, action)
-//
-//    def toTree(node: Node, action: Action) {
-//
-//      var current = node.add(action.name)
-//
-//      for (step <- action.steps) {
-//
-//        val fun = if (step.action.function != null) " (executable)" else ""
-//
-//        val stepNode = current.add(step.name + fun)
-//
-//        if (!action.parallel) current = stepNode
-//
-//        if (step.hasFurtherActionSteps) {
-//          toTree(stepNode, step.action)
-//        }
-//      }
-//    }
-//    tree
-//  }
-
   private def toHtml(step: Step): String = {
     val name = step.name
     if (step.hasFurtherActionSteps) Action.toHtml(step.action) else s"$name"
@@ -117,10 +90,6 @@ class Action(val name: String,
   override def getAll: Map[String, Any] = data.asScala.toMap
 
   override def toString() = s"Action $name"
-
-//  def print() {
-//    println(Action.toTree(this).toColorString().replace("executable", Console.RED + "executable" + Console.RESET))
-//  }
 
 }
 
