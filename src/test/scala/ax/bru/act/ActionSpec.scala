@@ -9,9 +9,13 @@ class ActionSpec extends Specification {
   //Action 1
   val action: Action = ExampleAction.action
 
-  displayAction(action)
+//  displayAction(action)
+//
+//  Thread.sleep(5000)
 
-  Thread.sleep(5000)
+
+  action.print()
+
 
   action.execute()
 
@@ -46,7 +50,7 @@ class ActionSpec extends Specification {
 
   def displayAction(action: Action) {
     import javax.swing.{JFrame, JLabel}
-    val frame = new JFrame()
+    val frame = new JFrame("Example Action in Html")
     frame.setVisible(true)
     val l = new JLabel
     frame.getContentPane.add(l)

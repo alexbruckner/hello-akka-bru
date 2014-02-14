@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.{Map => JMap}
 
 import scala.collection.JavaConverters._
+import ax.bru.util.{Node, LinkedTree}
 
 /**
  * Created by alexbruckner on 14/01/2014
@@ -14,7 +15,9 @@ object Action {
   def apply(name: String): Action = {
     new Action(name, false, null)(new ConcurrentHashMap())
   }
+
   def create(name: String) = apply(name: String)
+
   def toHtml(action: Action): String = {
 
     val name = action.name
@@ -26,9 +29,9 @@ object Action {
     if (action.parallel) stepBuilder.append("<tr>")
 
     for (step <- action.steps) {
-      if (! action.parallel) stepBuilder.append("<tr>")
+      if (!action.parallel) stepBuilder.append("<tr>")
       stepBuilder.append("<th style='background-color:red;'>").append(Action.toHtml(step)).append("</th>")
-      if (! action.parallel) stepBuilder.append("</tr>")
+      if (!action.parallel) stepBuilder.append("</tr>")
     }
 
     if (action.parallel) stepBuilder.append("</tr>")
@@ -36,6 +39,38 @@ object Action {
     stepBuilder.append("</table>")
 
     stepBuilder.toString()
+
+  }
+
+  def toTree(action: Action): LinkedTree = {
+
+    val tree = LinkedTree(action.id)
+
+    toTree(tree.root, action)
+
+    def toTree(node: Node, action: Action) {
+
+      var current = node.add(action.name)
+
+      for (step <- action.steps) {
+
+        val fun = if (step.action.function != null) " (executable)" else ""
+
+        val stepNode = current.add(step.name + fun)
+
+        if (!action.parallel) current = stepNode
+
+        if (step.hasFurtherActionSteps) {
+          toTree(stepNode, step.action)
+        }
+
+      }
+
+
+
+    }
+
+    tree
 
   }
 
@@ -63,7 +98,7 @@ class Action(val name: String,
     steps = steps ::: List(step)
     step
   }
-  
+
   def hasSteps = steps.size > 0
 
   // single-threaded sequential step execution
@@ -72,7 +107,8 @@ class Action(val name: String,
       for (step <- steps) {
         step.execute()
       }
-    } else { // execute stepless action
+    } else {
+      // execute stepless action
       function(this)
     }
   }
@@ -86,6 +122,10 @@ class Action(val name: String,
   override def getAll: Map[String, Any] = data.asScala.toMap
 
   override def toString() = s"Action $name"
+
+  def print() {
+    println(Action.toTree(this).toColorString().replace("executable", Console.RED + "executable" + Console.RESET))
+  }
 
 }
 

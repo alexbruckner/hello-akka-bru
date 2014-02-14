@@ -27,7 +27,7 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
 
   def updateCellSize() {
     if (wantedCellSize == 0) {
-      cellSize = root.flatten.map(node => node.name.length()).max
+      cellSize = root.flatten.map(node => node.name.length()).max + 1
     }
   }
 
