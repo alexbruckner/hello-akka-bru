@@ -4,19 +4,19 @@ import ax.bru.defs.Executable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomLoader {
 
+    public static Map<String, String> executables = new ConcurrentHashMap<>();
 
     public static List<ax.bru.defs.Action> loadConfigWith(ClassLoader additionalClassLoader) {
         return loadConfig(additionalClassLoader);
     }
 
     public static List<ax.bru.defs.Action> loadConfig(ClassLoader... additionalClassLoaders) {
+        executables.clear();
         List<ax.bru.defs.Action> actions = new ArrayList<>();
         try {
             for (Class<?> c : Classes.listAnnotatedClasses(Action.class, additionalClassLoaders)) {
@@ -53,7 +53,9 @@ public class CustomLoader {
                 ax.bru.defs.Action actionDefinition2 = actionDefinition.addStep(step.getName()).setAction(actionName, parallel);
                 addStepsToActionDefinition(actionDefinition2, inspectStepAnnotatedMethods(step.getInstance().getClass()));
             } else if (step.getType() == Executable.class) {
-                actionDefinition.addStep(step.getName()).setExecutable((Executable) step.getInstance());
+                Executable stepInstance = (Executable) step.getInstance();
+                actionDefinition.addStep(step.getName()).setExecutable(stepInstance);
+                executables.put(ax.bru.defs.Action.getId(actionDefinition.name()) + "/" + ax.bru.defs.Action.getId(step.getName()), stepInstance.getClass().getName());
             }
         }
     }

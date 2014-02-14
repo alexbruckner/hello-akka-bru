@@ -64,11 +64,13 @@ object ActionSystem extends Logging {
     }
     println("Defined actions..........")
     for (action <- actions) {
-//      println(s"Action Tree for ${action.name}:")
-//      action.print()
       println(s"Actor setup for ${action.name}:")
       printActorTree(action.name)
     }
+
+    println("!!!")
+    println(CustomLoader.executables)
+
   }
 
   // introspection of defined action actors
@@ -82,8 +84,21 @@ object ActionSystem extends Logging {
     def makeTree(sorted: Map[String, List[String]], current: List[String], node: Node) {
       for (elem <- current) {
         val lastIndex = elem.lastIndexOf("/") - 1
-        val beforeThatIndex = elem.substring(0,lastIndex).lastIndexOf("/") + 1
+        var beforeThatIndex = elem.substring(0,lastIndex).lastIndexOf("/") + 1
+        if (elem.endsWith("executable")) {
+          beforeThatIndex = elem.substring(0,beforeThatIndex - 1).lastIndexOf("/") + 1
+        }
         val currentNode = node.add(elem.substring(beforeThatIndex))
+
+        if (elem.endsWith("executable")) {
+          val lookup = CustomLoader.executables.get(currentNode.name.replace("/executable", ""))
+          if (lookup != null) {
+            currentNode.name = s"executable ($lookup)"
+          } else {
+            currentNode.name = currentNode.name.substring(currentNode.name.indexOf("/") + 1)
+          }
+        }
+
         val checkNext = sorted.get(elem)
         if (checkNext.isDefined) {
           val next = checkNext.get
