@@ -64,6 +64,9 @@ object ActionSystem extends Logging {
     }
     println("Defined actions..........")
     for (action <- actions) {
+      println(s"Action Tree for ${action.name}:")
+      action.print()
+      println(s"Corresponding actor setup for ${action.name}:")
       printActorTree(action.name)
     }
   }
