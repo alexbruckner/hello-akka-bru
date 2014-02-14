@@ -67,10 +67,6 @@ object ActionSystem extends Logging {
       println(s"Actor setup for ${action.name}:")
       printActorTree(action.name)
     }
-
-    println("!!!")
-    println(CustomLoader.executables)
-
   }
 
   // introspection of defined action actors
@@ -81,7 +77,7 @@ object ActionSystem extends Logging {
     val received2: Map[String, Any] = performAndWait(5, actionName, (Reserved.INFO, true)).toMap
 
 
-    def makeTree(sorted: Map[String, List[String]], current: List[String], node: Node) {
+    def makeTree(data: Map[String, List[String]], current: List[String], node: Node) {
       for (elem <- current) {
         val lastIndex = elem.lastIndexOf("/") - 1
         var beforeThatIndex = elem.substring(0,lastIndex).lastIndexOf("/") + 1
@@ -99,10 +95,10 @@ object ActionSystem extends Logging {
           }
         }
 
-        val checkNext = sorted.get(elem)
+        val checkNext = data.get(elem)
         if (checkNext.isDefined) {
           val next = checkNext.get
-          makeTree(sorted, next, currentNode)
+          makeTree(data, next, currentNode)
         }
       }
     }
@@ -114,12 +110,10 @@ object ActionSystem extends Logging {
         if key.startsWith("akka://")
       } yield (key, value.asInstanceOf[List[String]])
 
-      val sorted: Map[String, List[String]] = SortedMap(filtered.toSeq: _*)
-
       println
       println("---------------------------------------")
       val tree = LinkedTree(s"''${Console.MAGENTA}$actionName${Console.RESET}''")
-      makeTree(sorted, List("akka://Actions/user/ActionSupervisor"), tree.root)
+      makeTree(filtered, List("akka://Actions/user/ActionSupervisor"), tree.root)
       println(tree.removeDuplicates().toColorString().replaceAll("executable", Console.RED + "executable" + Console.RESET))
       println
       println("---------------------------------------")

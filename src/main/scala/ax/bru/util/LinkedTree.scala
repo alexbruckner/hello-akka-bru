@@ -137,13 +137,12 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
     override def hasNext: Boolean = iterator.hasNext
   }
 
-  def removeDuplicates(): LinkedTree = {
+  def removeDuplicates(): LinkedTree = synchronized {
     updateCellSize()
     var nodesNames: List[String] = List()
     for (node <- this) {
       if (nodesNames.contains(node.name)) {
         node.children = List()
-        //        node.name = "|"
         var nextNode = node
         val check: Option[Node] = find(node.name)
         node.name = "|"
