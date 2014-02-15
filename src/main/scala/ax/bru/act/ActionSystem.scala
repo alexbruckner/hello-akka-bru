@@ -25,6 +25,7 @@ object ActionSystem extends Logging {
   val actionSupervisor = system.actorOf(Props[ActionSupervisor], "ActionSupervisor")
 
   def addAction(action: Action) {
+    println("Adding action: " + action.name)
     actionSupervisor ! Add(action)
   }
 
@@ -53,13 +54,12 @@ object ActionSystem extends Logging {
 
   // TODO logging!!!
   def start() {
-    start(null)
+    start(getClass.getClassLoader)
   }
   def start(additionalClassLoader: ClassLoader) {
     println("Loading config...........")
     val actions: List[Action] = CustomLoader.loadConfigWith(additionalClassLoader).asScala.toList
     for (action <- actions) {
-      println("Adding action: " + action.name)
       addAction(action)
     }
     println("Defined actions..........")

@@ -7,7 +7,7 @@ import ax.bru.act.{Result, ActionSystem}
 
 object ActionController extends Controller {
 
-  ActionSystem.start(getClass.getClassLoader)
+  ActionSystem.start(getClass.getClassLoader) // need to pass in classloader for play app
 
   def perform = Action {
 

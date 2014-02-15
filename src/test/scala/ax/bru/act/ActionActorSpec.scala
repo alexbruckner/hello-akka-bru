@@ -49,4 +49,9 @@ class ActionActorSpec(_system: ActorSystem)
 
   }
 
+  //checking scala config action
+  ActionSystem.start()
+
+  println("done")
+
 }
