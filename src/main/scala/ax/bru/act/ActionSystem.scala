@@ -73,7 +73,7 @@ object ActionSystem extends Logging {
 
   // info only request, should return paths and connections between actors
 
-  def printActorTree(actionName: String) {
+  def printActorTree(actionName: String) = synchronized {
     val received2: Map[String, Any] = performAndWait(5, actionName, (Reserved.INFO, true)).toMap
 
 
@@ -112,7 +112,7 @@ object ActionSystem extends Logging {
 
       println
       println("---------------------------------------")
-      val tree = LinkedTree(s"''${Console.MAGENTA}$actionName${Console.RESET}''")
+      val tree = LinkedTree(s"''${Console.UNDERLINED}${Console.YELLOW}$actionName${Console.RESET}''")
       makeTree(filtered, List("akka://Actions/user/ActionSupervisor"), tree.root)
       println(tree.removeDuplicates().toColorString().replaceAll("executable", Console.RED + "executable" + Console.RESET))
       println
