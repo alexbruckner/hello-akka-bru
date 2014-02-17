@@ -114,7 +114,8 @@ object ActionSystem extends Logging {
       println("---------------------------------------")
       val tree = LinkedTree(s"''${Console.UNDERLINED}${Console.YELLOW}$actionName${Console.RESET}''")
       makeTree(filtered, List("akka://Actions/user/ActionSupervisor"), tree.root)
-      println(tree.removeDuplicates().toColorString().replaceAll("executable", Console.RED + "executable" + Console.RESET))
+      tree.removeDuplicates()
+      println(tree.toColorString().replaceAll("executable", Console.RED + "executable" + Console.RESET))
       println
       println("---------------------------------------")
 

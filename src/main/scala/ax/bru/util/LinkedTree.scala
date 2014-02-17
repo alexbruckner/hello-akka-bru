@@ -25,7 +25,7 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
 
   var cellSize = wantedCellSize
 
-  def updateCellSize() {
+  def updateCellSize():Unit = synchronized {
     if (wantedCellSize == 0) {
       cellSize = root.flatten.map(node => node.name.length()).max + 1
     }
@@ -137,7 +137,7 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
     override def hasNext: Boolean = iterator.hasNext
   }
 
-  def removeDuplicates(): LinkedTree = synchronized {
+  def removeDuplicates(): Unit = synchronized {
     updateCellSize()
     var nodesNames: List[String] = List()
     for (node <- this) {
@@ -155,7 +155,6 @@ class LinkedTree(val name: String, val wantedCellSize: Int) extends Iterable[Nod
       }
       else nodesNames = nodesNames ::: List(node.name)
     }
-    this
   }
 
   def find(name: String): Option[Node] = {

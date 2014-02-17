@@ -11,12 +11,12 @@ import ax.bru.java.SubAction;
 @Action(name = "Action 4 (3-3)", parallel = true)
 public class Step33 implements SubAction {
 
-    @Step(name = "4-1")
+    @Step(order = 1, name = "4-1")
     public Executable step41() {
         return new Step41();
     }
 
-    @Step(name = "4-2")
+    @Step(order = 2, name = "4-2")
     public Executable step42() {
         return new Step42();
     }
