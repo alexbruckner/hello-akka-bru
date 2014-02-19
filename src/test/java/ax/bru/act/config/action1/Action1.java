@@ -8,12 +8,18 @@ import ax.bru.defs.Executable;
 import ax.bru.java.Action;
 import ax.bru.java.Step;
 import ax.bru.java.SubAction;
+import ax.bru.java.strict.Description;
 
 
 /**
  * Created by alexbruckner on 26/01/2014
  */
 @Action(name = "Java Config Action 1") // is main as does not inherit from SubAction
+@Description("This is the Java Config Action 1, \n" +
+             "which is a test case example \n" +
+             "for this framework and executed in sequence. \n" +
+             "Steps 1,2 and 4 are executables, \n" +
+             "whereas step 3 is itself a subaction.") // required in strict mode for main/top-level action
 public class Action1 {
 
     @Step(order = 1, name = "1-1")

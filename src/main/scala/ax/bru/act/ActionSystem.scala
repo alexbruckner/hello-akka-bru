@@ -58,6 +58,7 @@ object ActionSystem extends Logging {
   }
   def start(additionalClassLoader: ClassLoader) {
     println("Loading config...........")
+//    CustomLoader.setStrict(true)
     val actions: List[Action] = CustomLoader.loadConfigWith(additionalClassLoader).asScala.toList
     for (action <- actions) {
       addAction(action)
