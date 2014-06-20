@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "com.novocode" % "junit-interface" % "0.10" % "test",
   "org.specs2" %% "specs2" % "2.3.6" % "test",
   "org.eintr.loglady" %% "loglady" % "1.1.0",
-  "ch.qos.logback" % "logback-classic" % "1.0.3"
+  "ch.qos.logback" % "logback-classic" % "1.0.3",
+  "com.typesafe.akka" %% "akka-remote" % "2.2.1"
 )
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")

@@ -27,6 +27,7 @@ object ActionSystem extends Logging {
   def addAction(action: Action) {
     println("Adding action: " + action.name)
     actionSupervisor ! Add(action)
+    printActorTree(action.name)
   }
 
   def perform(action: String, data: Pair[String, Any]*) {
