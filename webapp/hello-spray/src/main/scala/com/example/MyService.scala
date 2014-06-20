@@ -1,6 +1,7 @@
 package com.example
 
 import akka.actor.Actor
+import ax.bru.act.{ActionSystem, Result}
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -23,9 +24,13 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService {
 
+
+
   val myRoute =
     path("") {
       get {
+        val result: Result = ActionSystem.performAndWait(5, "Java Config Action 1", ("test", "test"), ("another", 1))
+
         respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             <html>

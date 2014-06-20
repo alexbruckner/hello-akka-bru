@@ -53,10 +53,14 @@ public class Classes {
                     for (String child : Classes.getChildren(url)) {
                         if (child.endsWith(".class")) {
                             String className = child.substring(0, child.length() - 6).replace("/", ".");
-                            Class<?> clazz = classLoader.loadClass(className);
+                            try {
+                                Class<?> clazz = classLoader.loadClass(className);
 
-                            if (clazz.getAnnotation(annotation) != null) {
-                                classes.add(clazz);
+                                if (clazz.getAnnotation(annotation) != null) {
+                                    classes.add(clazz);
+                                }
+                            } catch (NoClassDefFoundError ncdfe) {
+                                ncdfe.printStackTrace();
                             }
                         }
                     }
